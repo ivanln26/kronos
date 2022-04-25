@@ -1,6 +1,7 @@
 import type { NextPage } from "next";
 
 import Card from "../components/Card";
+import Navbar from "../components/Navbar";
 
 const Home: NextPage = () => {
   const list = [
@@ -19,11 +20,14 @@ const Home: NextPage = () => {
   ];
 
   return (
-    <div className="flex justify-center px-2">
-      <div className="flex flex-col basis-full gap-y-2">
-        {list.map((l, i) => <Card key={i} {...l} />)}
+    <>
+      <Navbar />
+      <div className="flex justify-center px-2">
+        <div className="flex flex-col basis-full gap-y-2">
+          {list.map((l, i) => <Card key={i} {...l} />)}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
