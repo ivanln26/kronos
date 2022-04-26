@@ -4,7 +4,7 @@ const Navbar = () => {
   return (
     <div className="flex justify-between p-2 rounded-b-lg">
       <Link href="/">
-        <a className="text-4xl text-blue-600 dark:text-blue-500 font-bold align-middle">
+        <a className="text-4xl text-primary-40 dark:text-primary-80 font-bold align-middle">
           kronos
         </a>
       </Link>
