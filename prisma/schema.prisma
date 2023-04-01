@@ -1,0 +1,124 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+model Attendance {
+  id        BigInt  @id @unique @default(autoincrement()) @db.UnsignedBigInt
+  studentId BigInt  @map("student_id") @db.UnsignedBigInt
+  lectureId BigInt  @map("lecture_id") @db.UnsignedBigInt
+  isPresent Boolean @default(false) @map("is_present")
+
+  student User    @relation(fields: [studentId], references: [id])
+  lecture Lecture @relation(fields: [lectureId], references: [id])
+
+  @@map("attendance")
+}
+
+model Classroom {
+  id   BigInt @id @unique @default(autoincrement()) @db.UnsignedBigInt
+  name String @unique @db.VarChar(40)
+
+  schedules Schedule[]
+
+  @@map("classroom")
+}
+
+model Course {
+  id        BigInt   @id @unique @default(autoincrement()) @db.UnsignedBigInt
+  name      String   @db.VarChar(120)
+  startDate DateTime @map("start_date") @db.Date
+  endDate   DateTime @map("end_date") @db.Date
+
+  enrollments Enrollment[]
+  schedules   Schedule[]
+
+  @@map("course")
+}
+
+model Enrollment {
+  id        BigInt @id @unique @default(autoincrement()) @db.UnsignedBigInt
+  studentId BigInt @map("student_id") @db.UnsignedBigInt
+  courseId  BigInt @map("course_id") @db.UnsignedBigInt
+
+  student User   @relation(fields: [studentId], references: [id])
+  course  Course @relation(fields: [courseId], references: [id])
+
+  @@map("enrollment")
+}
+
+model Lecture {
+  id         BigInt   @id @unique @default(autoincrement()) @db.UnsignedBigInt
+  scheduleId BigInt   @map("schedule_id") @db.UnsignedBigInt
+  date       DateTime @db.Date
+
+  attendances Attendance[]
+  schedules   Schedule     @relation(fields: [scheduleId], references: [id])
+
+  @@map("lecture")
+}
+
+model Schedule {
+  id          BigInt           @id @unique @default(autoincrement()) @db.UnsignedBigInt
+  courseId    BigInt           @map("course_id") @db.UnsignedBigInt
+  classroomId BigInt           @map("classroom_id") @db.UnsignedBigInt
+  professorId BigInt           @map("professor_id") @db.UnsignedBigInt
+  weekday     Weekday
+  modality    ScheduleModality @default(f2f)
+  type        ScheduleType
+  startTime   DateTime         @map("start_time") @db.Time(0)
+  endTime     DateTime         @map("end_time") @db.Time(0)
+
+  lectures  Lecture[]
+  classroom Classroom @relation(fields: [classroomId], references: [id])
+  course    Course    @relation(fields: [courseId], references: [id])
+  user      User      @relation(fields: [professorId], references: [id])
+
+  @@map("schedule")
+}
+
+model User {
+  id       BigInt   @id @unique @default(autoincrement()) @db.UnsignedBigInt
+  ucc      String   @unique @db.VarChar(8)
+  name     String   @db.VarChar(120)
+  lastName String   @map("last_name") @db.VarChar(120)
+  email    String   @db.VarChar(255)
+  role     UserRole
+
+  attendances Attendance[]
+  enrollments Enrollment[]
+  schedules   Schedule[]
+
+  @@map("user")
+}
+
+enum Weekday {
+  monday
+  tuesday
+  wednesday
+  thursday
+  friday
+}
+
+enum ScheduleModality {
+  f2f
+  virtual
+  hybrid
+}
+
+enum UserRole {
+  admin
+  student
+  profesor
+}
+
+enum ScheduleType {
+  theoretical
+  practical
+  laboratory
+}
