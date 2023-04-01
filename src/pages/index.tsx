@@ -1,8 +1,8 @@
 import type { NextPage } from "next";
 
-import Card from "../components/Card";
-import Navbar from "../components/Navbar";
-import Week from "../components/Week";
+import Card from "@/components/Card";
+import Navbar from "@/components/Navbar";
+import Week from "@/components/Week";
 
 const Home: NextPage = () => {
   const list = [
