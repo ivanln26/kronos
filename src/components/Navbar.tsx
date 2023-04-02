@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Button from "./Button";
 
 const Navbar = () => {
   return (
@@ -9,6 +10,7 @@ const Navbar = () => {
       >
         kronos
       </Link>
+      <Button>Iniciar Sesión</Button>
     </div>
   );
 };
