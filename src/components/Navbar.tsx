@@ -1,7 +1,10 @@
 import Link from "next/link";
+import { signIn, signOut, useSession } from "next-auth/react";
 import Button from "./Button";
 
 const Navbar = () => {
+  const { data: session } = useSession();
+
   return (
     <div className="flex justify-between p-2 rounded-b-lg">
       <Link
@@ -10,7 +13,9 @@ const Navbar = () => {
       >
         kronos
       </Link>
-      <Button>Iniciar Sesión</Button>
+      {session == null
+        ? <Button onClick={() => signIn()}>Iniciar Sesión</Button>
+        : <Button onClick={() => signOut()}>Cerrar Sessión</Button>}
     </div>
   );
 };

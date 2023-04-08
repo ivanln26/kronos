@@ -114,7 +114,7 @@ enum ScheduleModality {
 enum UserRole {
   admin
   student
-  profesor
+  professor
 }
 
 enum ScheduleType {
