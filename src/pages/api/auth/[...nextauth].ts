@@ -1,7 +1,18 @@
-import NextAuth, { type NextAuthOptions } from "next-auth";
+import NextAuth, { type DefaultSession, type NextAuthOptions } from "next-auth";
 import GoogleProvider, { type GoogleProfile } from "next-auth/providers/google";
 import { prisma } from "@/server/db";
 import { uccEmail, user } from "@/server/types";
+import { type UserRole } from "@prisma/client";
+
+declare module "next-auth" {
+  interface Session {
+    user: {
+      role: UserRole | null;
+    } & DefaultSession["user"];
+  }
+
+  interface Profile extends GoogleProfile {}
+}
 
 export const authOptions: NextAuthOptions = {
   callbacks: {
@@ -10,11 +21,10 @@ export const authOptions: NextAuthOptions = {
     },
     async jwt({ token, trigger, profile }) {
       if (trigger == "signIn") {
-        const acc = profile as GoogleProfile;
         const res = user.safeParse({
-          email: acc.email,
-          name: acc.given_name,
-          lastName: acc.family_name,
+          email: profile?.email,
+          name: profile?.given_name,
+          lastName: profile?.family_name,
           role: "student",
         });
         if (res.success) {
@@ -26,6 +36,20 @@ export const authOptions: NextAuthOptions = {
         }
       }
       return token;
+    },
+    async session({ session, token }) {
+      const user = await prisma.user.findUnique({
+        where: {
+          ucc: token.email?.split("@")[0],
+        },
+      });
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          role: user?.role,
+        },
+      };
     },
   },
   providers: [
