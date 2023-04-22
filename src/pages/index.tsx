@@ -1,5 +1,6 @@
 import type { NextPage } from "next";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 import Card from "@/components/Card";
 import Navbar from "@/components/Navbar";
@@ -56,7 +57,16 @@ const Home: NextPage = () => {
       <div className="flex justify-center px-2">
         <div className="flex flex-col basis-full gap-y-2">
           {!lectures.isLoading && !lectures.isError &&
-            lectures.data.map((lecture, i) => <Card key={i} {...lecture} />)}
+            lectures.data.map((lecture, i) => (
+              <Link
+                href={{
+                  pathname: "/lecture/[id]",
+                  query: { id: Number(lecture.id) },
+                }}
+              >
+                <Card key={i} {...lecture} />
+              </Link>
+            ))}
         </div>
       </div>
     </>

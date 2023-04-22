@@ -38,6 +38,7 @@ export const lectureRouter = router({
 
     return lectures.map((l) => {
       return {
+        id: l.id,
         classroom: l.schedules.classroom.name,
         teacher:
           `${l.schedules.user.lastName.toUpperCase()}, ${l.schedules.user.name}`,
