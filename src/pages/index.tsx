@@ -5,10 +5,9 @@ import Card from "@/components/Card";
 import Navbar from "@/components/Navbar";
 import Week from "@/components/Week";
 import { trpc } from "@/utils/trpc";
+import { Weekday } from "@/server/types";
 
 const Home: NextPage = () => {
-  const lectures = trpc.lecture.get.useQuery({ day: "L" });
-
   const initialDays = [
     { name: "L", active: false },
     { name: "M", active: false },
@@ -17,7 +16,25 @@ const Home: NextPage = () => {
     { name: "V", active: false },
   ];
 
+  const mapWeekday = (i: number): Weekday => {
+    switch (i) {
+      case 0:
+        return "monday";
+      case 1:
+        return "tuesday";
+      case 2:
+        return "wednesday";
+      case 3:
+        return "thursday";
+      default:
+        return "friday";
+    }
+  };
+
+  const [currentDay, setCurrentDay] = useState<Weekday>("monday");
   const [days, setDays] = useState(initialDays);
+
+  const lectures = trpc.lecture.get.useQuery({ day: currentDay });
 
   useEffect(() => {
     let days = [...initialDays];
@@ -29,6 +46,7 @@ const Home: NextPage = () => {
     let days = [...initialDays];
     days[i].active = true;
     setDays(days);
+    setCurrentDay(mapWeekday(i));
   };
 
   return (

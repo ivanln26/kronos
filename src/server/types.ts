@@ -17,3 +17,13 @@ export const user = z.object({
 });
 
 export type User = z.infer<typeof user>;
+
+export const weekdays = z.enum([
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+]);
+
+export type Weekday = z.infer<typeof weekdays>;

@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import { prisma } from "../db";
 import { procedure, router } from "../trpc";
+import { weekdays } from "../types";
 
 const formatting = new Intl.DateTimeFormat("es-AR", {
   timeZone: "UTC",
@@ -15,9 +16,10 @@ function formatDate(date: Date) {
 
 export const lectureRouter = router({
   get: procedure.input(z.object({
-    day: z.string(),
+    day: weekdays,
   })).query(async ({ input }) => {
-    const ls = await prisma.lecture.findMany({
+    const { day } = input;
+    const lectures = await prisma.lecture.findMany({
       include: {
         schedules: {
           include: {
@@ -27,9 +29,14 @@ export const lectureRouter = router({
           },
         },
       },
+      where: {
+        schedules: {
+          weekday: day,
+        },
+      },
     });
 
-    return ls.map((l) => {
+    return lectures.map((l) => {
       return {
         classroom: l.schedules.classroom.name,
         teacher: l.schedules.user.name,
