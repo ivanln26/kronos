@@ -35,7 +35,7 @@ const Home: NextPage = () => {
   const [currentDay, setCurrentDay] = useState<Weekday>("monday");
   const [days, setDays] = useState(initialDays);
 
-  const lectures = trpc.lecture.get.useQuery({ day: currentDay });
+  const lectures = trpc.lecture.getByDay.useQuery({ day: currentDay });
 
   useEffect(() => {
     let days = [...initialDays];
@@ -59,12 +59,13 @@ const Home: NextPage = () => {
           {!lectures.isLoading && !lectures.isError &&
             lectures.data.map((lecture, i) => (
               <Link
+                key={i}
                 href={{
                   pathname: "/lecture/[id]",
                   query: { id: Number(lecture.id) },
                 }}
               >
-                <Card key={i} {...lecture} />
+                <Card {...lecture} />
               </Link>
             ))}
         </div>
