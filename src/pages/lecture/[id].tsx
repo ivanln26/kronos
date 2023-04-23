@@ -18,22 +18,25 @@ const LectureDetail: NextPage<LectureDetailProps> = ({}) => {
   return (
     <>
       <Navbar />
-      {status === "loading"
-        ? (
-          <div className="flex justify-center py-4">
-            <Spinner />
-          </div>
-        )
-        : status == "error"
-        ? <h1>Status: {error.message}</h1>
-        : data && (
-          <>
-            <p>{data.classroom}</p>
-            <p>{data.course}</p>
-            <p>{data.teacher}</p>
-            <p>{data.startDate} - {data.endDate}</p>
-          </>
-        )}
+      <main className="flex justify-center px-2">
+        {status === "loading"
+          ? (
+            <div className="flex justify-center py-4">
+              <Spinner />
+            </div>
+          )
+          : status == "error"
+          ? <h1>Status: {error.message}</h1>
+          : data && (
+            <section className="prose lg:prose-2xl dark:prose-invert min-w-full px-2 py-6 my-4 rounded bg-gradient-to-r bg-primary-99 from-primary-40/[.05] to-primary-40/[.05] dark:bg-neutral-10 dark:from-primary-80/[.05] dark:to-primary-80/[.05]">
+              <h1>{data.course}</h1>
+              <h3>{data.classroom}</h3>
+              <h3>Docente: {data.teacher}</h3>
+              <h3>Horario: {data.startDate} - {data.endDate}</h3>
+              <h3>Estado:</h3>
+            </section>
+          )}
+      </main>
     </>
   );
 };
