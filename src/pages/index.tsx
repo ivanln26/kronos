@@ -56,7 +56,7 @@ const Home: NextPage = () => {
       <Week days={days} setDays={updateDays} />
       <div className="flex justify-center px-2">
         <div className="flex flex-col basis-full gap-y-2">
-          {!lectures.isLoading && !lectures.isError &&
+          {lectures.data &&
             lectures.data.map((lecture, i) => (
               <Link
                 key={i}

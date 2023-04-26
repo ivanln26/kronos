@@ -43,6 +43,7 @@ export const lectureRouter = router({
       teacher:
         `${lecture.schedules.user.lastName.toUpperCase()}, ${lecture.schedules.user.name}`,
       course: lecture.schedules.course.name,
+      state: lecture.state,
       startDate: formatDate(lecture.schedules.startTime),
       endDate: formatDate(lecture.schedules.endTime),
     };
@@ -67,14 +68,17 @@ export const lectureRouter = router({
         },
       },
     });
+    console.log("LLega, ", lectures)
 
     return lectures.map((l) => {
+      console.log("L es: ", l)
       return {
         id: l.id,
         classroom: l.schedules.classroom.name,
         teacher:
           `${l.schedules.user.lastName.toUpperCase()}, ${l.schedules.user.name}`,
         course: l.schedules.course.name,
+        state: lecture.state,
         startDate: formatDate(l.schedules.startTime),
         endDate: formatDate(l.schedules.endTime),
       };

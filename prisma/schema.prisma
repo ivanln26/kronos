@@ -53,9 +53,10 @@ model Enrollment {
 }
 
 model Lecture {
-  id         BigInt   @id @unique @default(autoincrement()) @db.UnsignedBigInt
-  scheduleId BigInt   @map("schedule_id") @db.UnsignedBigInt
-  date       DateTime @db.Date
+  id         BigInt       @id @unique @default(autoincrement()) @db.UnsignedBigInt
+  scheduleId BigInt       @map("schedule_id") @db.UnsignedBigInt
+  state      LectureState
+  date       DateTime     @db.Date
 
   attendances Attendance[]
   schedules   Schedule     @relation(fields: [scheduleId], references: [id])
@@ -121,4 +122,11 @@ enum ScheduleType {
   theoretical
   practical
   laboratory
+}
+
+enum LectureState {
+  scheluded
+  on_going
+  canceled
+  delayed
 }

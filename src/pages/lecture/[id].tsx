@@ -33,7 +33,7 @@ const LectureDetail: NextPage<LectureDetailProps> = ({}) => {
               <h3>{data.classroom}</h3>
               <h3>Docente: {data.teacher}</h3>
               <h3>Horario: {data.startDate} - {data.endDate}</h3>
-              <h3>Estado:</h3>
+              <h3>Estado: {data.state} </h3>
             </section>
           )}
       </main>
