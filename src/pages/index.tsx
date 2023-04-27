@@ -1,5 +1,6 @@
 import type { NextPage } from "next";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 import Card from "@/components/Card";
 import Navbar from "@/components/Navbar";
@@ -34,7 +35,7 @@ const Home: NextPage = () => {
   const [currentDay, setCurrentDay] = useState<Weekday>("monday");
   const [days, setDays] = useState(initialDays);
 
-  const lectures = trpc.lecture.get.useQuery({ day: currentDay });
+  const lectures = trpc.lecture.getByDay.useQuery({ day: currentDay });
 
   useEffect(() => {
     let days = [...initialDays];
@@ -55,8 +56,18 @@ const Home: NextPage = () => {
       <Week days={days} setDays={updateDays} />
       <div className="flex justify-center px-2">
         <div className="flex flex-col basis-full gap-y-2">
-          {!lectures.isLoading && !lectures.isError &&
-            lectures.data.map((lecture, i) => <Card key={i} {...lecture} />)}
+          {lectures.data &&
+            lectures.data.map((lecture, i) => (
+              <Link
+                key={i}
+                href={{
+                  pathname: "/lecture/[id]",
+                  query: { id: Number(lecture.id) },
+                }}
+              >
+                <Card {...lecture} />
+              </Link>
+            ))}
         </div>
       </div>
     </>

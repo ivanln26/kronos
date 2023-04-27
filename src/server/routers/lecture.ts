@@ -15,7 +15,40 @@ function formatDate(date: Date) {
 }
 
 export const lectureRouter = router({
-  get: procedure.input(z.object({
+  get: procedure.input(
+    z.string().regex(/[0-9]*/).transform((val) => Number(val)),
+  ).query(async ({ input }) => {
+    const lecture = await prisma.lecture.findUnique({
+      include: {
+        schedules: {
+          include: {
+            classroom: true,
+            user: true,
+            course: true,
+          },
+        },
+      },
+      where: {
+        id: input,
+      },
+    });
+
+    if (lecture == null) {
+      return null;
+    }
+
+    return {
+      id: lecture.id,
+      classroom: lecture.schedules.classroom.name,
+      teacher:
+        `${lecture.schedules.user.lastName.toUpperCase()}, ${lecture.schedules.user.name}`,
+      course: lecture.schedules.course.name,
+      state: lecture.state,
+      startDate: formatDate(lecture.schedules.startTime),
+      endDate: formatDate(lecture.schedules.endTime),
+    };
+  }),
+  getByDay: procedure.input(z.object({
     day: weekdays,
   })).query(async ({ input }) => {
     const { day } = input;
@@ -38,10 +71,12 @@ export const lectureRouter = router({
 
     return lectures.map((l) => {
       return {
+        id: l.id,
         classroom: l.schedules.classroom.name,
         teacher:
           `${l.schedules.user.lastName.toUpperCase()}, ${l.schedules.user.name}`,
         course: l.schedules.course.name,
+        state: l.state,
         startDate: formatDate(l.schedules.startTime),
         endDate: formatDate(l.schedules.endTime),
       };
