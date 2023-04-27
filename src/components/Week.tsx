@@ -1,26 +1,35 @@
-import { useEffect, useState } from "react";
+import { Weekday } from "@prisma/client";
+import { Roboto_Mono } from "next/font/google";
+
 import Button from "./Button";
 
 type Day = {
+  id: Weekday;
   name: string;
-  active: boolean;
 };
 
 type WeekProps = {
   days: Day[];
-  setDays: (i: number) => void;
+  activeDay: Weekday;
+  setDays: (i: Weekday) => void;
 };
 
-const Week = ({ days, setDays }: WeekProps) => {
+const robotoMono = Roboto_Mono({
+  weight: "700",
+  subsets: ["latin"],
+});
+
+const Week = ({ days, activeDay, setDays }: WeekProps) => {
   return (
-    <div className="p-2">
+    <div className={`p-2 ${robotoMono.className}`}>
       <div className="flex justify-between p-2 rounded-md font-bold select-none bg-primary-99 bg-gradient-to-r from-primary-40/[.05] to-primary-40/[.05] dark:bg-neutral-10 dark:from-primary-80/[.05] dark:to-primary-80/[.05]">
-        {days.map(({ name, active }, idx) => (
+        {days.map(({ id, name }) => (
           <Button
-            key={name}
-            aspect={active ? "contained" : "text"}
-            onClick={() => setDays(idx)}
-            value={idx}
+            key={id}
+            aspect={activeDay == id ? "contained" : "text"}
+            size="large"
+            onClick={() => setDays(id)}
+            value={id}
           >
             {name}
           </Button>
