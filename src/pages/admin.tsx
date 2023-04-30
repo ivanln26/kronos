@@ -11,42 +11,54 @@ type sideBar = {
 
 export default function admin() {
     const schedules = trpc.schedules.get.useQuery();
+    const [editData, setEditData] = useState({});
     const [sideBar, setSideBar] = useState<sideBar>({
         "horarios": false,
         "cursos": false
     })
 
-    const alterSideBar  = (key: keyof sideBar, value: boolean) => {
+    const alterSideBar = (key: keyof sideBar, value: boolean) => {
         const sideBarTemp: sideBar = { ...sideBar };
         sideBarTemp[key] = value;
         setSideBar(sideBarTemp)
     }
 
-    const attributes = (keys: [], data: []) => {
+    const attributes = (obj: object) => {
+        console.log(obj)
+        const items = [];
+        for (let key in obj) {
+            if (key === "id") continue;
+            items.push(
+                <div className="columns-2 xs:colums-1 py-5 mx-4">
+                    {/* Key repetida (?) */}
+                    <p className="text-left w-40" key={key}>{key}</p> <input className="w-full rounded text-black p-2" key={key} type="text" value={obj[key]} />  {/* Fack */}
+                </div>
+            )
+        }
         return (
-            <>
-            </>
+            <div className="flex flex-col">
+                {items}
+            </div>
         )
     }
 
     return (
         <>
             <Navbar />
-            <div className="flex flex-row">
-                <div className=" h-screen mx-5 my-5 w-80 text-center rounded-xl font-black bg-primary-99 bg-gradient-to-r from-primary-40/[.05] to-primary-40/[.05] dark:bg-neutral-10 dark:from-primary-80/[.05] dark:to-primary-80/[.05]">
+            <div className="flex flex-row h-full">
+                <div className=" flex-none h-screen mx-5 my-5 w-80 text-center rounded-xl font-black 
+                bg-primary-99 bg-gradient-to-r from-primary-40/[.05] to-primary-40/[.05] dark:bg-neutral-10 dark:from-primary-80/[.05] dark:to-primary-80/[.05]">
                     <ul className={`py-4 mx-2 divide-solid divide-y`}>
                         <li className="hover:bg-primary-40 hover:text-primary-20 hover:bg-primary-80 hover:duration-500 py-1" onClick={() => alterSideBar("horarios", !sideBar["horarios"])}>Horarios</li>
                         <ul className={`${sideBar["horarios"] ? '' : 'hidden'}`}>
                             {
                                 !schedules.isLoading && !schedules.isError &&
                                 schedules.data.map((schedule, i) => (
-                                    <li key={Number(schedule.id)} onClick={() => { }} className="hover:bg-indigo-500 hover:duration-500 font-light ">
+                                    <li key={Number(schedule.id)} onClick={() => { setEditData({ ...schedule }) }} className="hover:bg-indigo-500 hover:duration-500 font-light ">
                                         {schedule.course}
                                     </li>
                                 ))
                             }
-                            <li className="hover:bg-indigo-500 hover:duration-500 font-light">Programación 1</li>
-                            <li className="hover:bg-indigo-500 hover:duration-500 font-light">Fisica 3</li>
                         </ul>
                         <li className="hover:bg-primary-40 hover:text-primary-20 hover:bg-primary-80 hover:duration-500 py-1" onClick={() => alterSideBar("cursos", !sideBar["cursos"])}>Cursos</li>
                         <ul className={`${sideBar["cursos"] ? '' : 'hidden'}`}>
@@ -55,14 +67,21 @@ export default function admin() {
                         </ul>
                     </ul>
                 </div>
-                <div className="flex text-center w-full bg-gray-500 my-5 rounded-xl mx-5
+                {
+                    Object.keys(editData).length !== 0 &&
+                    <div className=" h-full flex text-center w-screen bg-gray-500 my-5 rounded-xl
                     bg-primary-99 bg-gradient-to-r from-primary-40/[.05] to-primary-40/[.05] dark:bg-neutral-10 dark:from-primary-80/[.05] dark:to-primary-80/[.05]
-                    flex-col divide-y divide-solid" >
+                    flex-col" >
 
-                    <div>
-                        {/* TODO: {attributes(Object.keys(modalData), Object.values(modalData))} */}
+                        <div>
+                            {attributes(editData)}
+                        </div>
+                        <div className="flex flex-row justify-around my-4 mx-4">
+                            <button className="bg-red-400 rounded-lg w-20 h-10" onClick={() => setEditData({})}>Cancelar</button>
+                            <button className="bg-green-400 rounded-lg w-20 h-10">Guardar</button>
+                        </div>
                     </div>
-                </div>
+                }
             </div>
         </>
     )
