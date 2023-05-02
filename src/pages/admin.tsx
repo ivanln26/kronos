@@ -10,12 +10,21 @@ type sideBar = {
 }
 
 export default function admin() {
-    const schedules = trpc.schedules.get.useQuery();
     const [editData, setEditData] = useState({});
     const [sideBar, setSideBar] = useState<sideBar>({
         "horarios": false,
         "cursos": false
     })
+
+    const schedules = trpc.schedules.get.useQuery();
+    const mutation = trpc.schedules.mutate.useMutation();
+
+    
+    const saveChanges = () => {
+        const res = mutation.mutate({...editData});
+        schedules.refetch()
+    }
+
 
     const alterSideBar = (key: keyof sideBar, value: boolean) => {
         const sideBarTemp: sideBar = { ...sideBar };
@@ -23,15 +32,20 @@ export default function admin() {
         setSideBar(sideBarTemp)
     }
 
+    const handleDataChange = (key: string, value: any) => {
+        const aux = {...editData}
+        aux[key] = value;
+        setEditData({...aux})
+    }
+
     const attributes = (obj: object) => {
-        console.log(obj)
         const items = [];
         for (let key in obj) {
             if (key === "id") continue;
             items.push(
-                <div className="columns-2 xs:colums-1 py-5 mx-4">
+                <div key={key} className="columns-2 xs:colums-1 py-5 mx-4">
                     {/* Key repetida (?) */}
-                    <p className="text-left w-40" key={key}>{key}</p> <input className="w-full rounded text-black p-2" key={key} type="text" value={obj[key]} />  {/* Fack */}
+                    <p className="text-left w-40">{key}</p> <input onChange={(e) => {handleDataChange(key, e.target.value)}} className="w-full rounded text-black p-2" type="text" value={obj[key]} />  {/* Fack */}
                 </div>
             )
         }
@@ -78,7 +92,7 @@ export default function admin() {
                         </div>
                         <div className="flex flex-row justify-around my-4 mx-4">
                             <button className="bg-red-400 rounded-lg w-20 h-10" onClick={() => setEditData({})}>Cancelar</button>
-                            <button className="bg-green-400 rounded-lg w-20 h-10">Guardar</button>
+                            <button className="bg-green-400 rounded-lg w-20 h-10" onClick={() => saveChanges()}>Guardar</button>
                         </div>
                     </div>
                 }
