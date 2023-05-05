@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { prisma } from "../db";
 import { procedure, router } from "../trpc";
-import { weekdays } from "../types";
+import { lectureState, weekdays } from "../types";
 
 const formatting = new Intl.DateTimeFormat("es-AR", {
   timeZone: "UTC",
@@ -80,6 +80,15 @@ export const lectureRouter = router({
         startDate: formatDate(l.schedules.startTime),
         endDate: formatDate(l.schedules.endTime),
       };
+    });
+  }),
+  updateState: procedure.input(z.object({
+    id: z.string().regex(/[0-9]*/).transform((val) => Number(val)),
+    state: lectureState,
+  })).mutation(async ({ input }) => {
+    await prisma.lecture.update({
+      where: { id: input.id },
+      data: { state: input.state },
     });
   }),
 });
