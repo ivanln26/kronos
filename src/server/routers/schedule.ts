@@ -32,15 +32,14 @@ export const scheduleRouter = router({
       },
     });
 
-    return schedules.map((l) => {
+    return schedules.map((schedule) => {
       return {
-        id: l.id,
-        classroom: l.classroom.name,
-        teacher:
-          `${l.user.lastName.toUpperCase()}, ${l.user.name}`,
-        course: l.course.name,
-        startDate: formatDate(l.startTime),
-        endDate: formatDate(l.endTime),
+        id: schedule.id,
+        classroom: schedule.classroom.id,
+        teacher:schedule.user.id,
+        course: schedule.course.id,
+        startDate: formatDate(schedule.startTime),
+        endDate: formatDate(schedule.endTime),
       };
     });
   }),

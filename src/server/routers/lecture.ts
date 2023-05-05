@@ -48,6 +48,16 @@ export const lectureRouter = router({
       endDate: formatDate(lecture.schedules.endTime),
     };
   }),
+  getAll: procedure.query( async () => {
+    const lectures = await prisma.lecture.findMany({});
+    return lectures.map((lecture) => {
+      return {
+        id: lecture.id,
+        date: lecture.date,
+        schedule: lecture.scheduleId,
+      }
+    })
+  }),
   getByDay: procedure.input(z.object({
     day: weekdays,
   })).query(async ({ input }) => {
