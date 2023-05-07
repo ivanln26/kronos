@@ -27,3 +27,19 @@ export const weekdays = z.enum([
 ]);
 
 export type Weekday = z.infer<typeof weekdays>;
+
+export const modalities = z.enum([
+  "f2f",
+  "virtual",
+  "hybrid",
+]);
+
+export type Modality = z.infer<typeof modalities>;
+
+export const scheduleTypes = z.enum([
+  "theoretical",
+  "practical",
+  "laboratory",
+]);
+
+export type ScheduleType = z.infer<typeof scheduleTypes>;

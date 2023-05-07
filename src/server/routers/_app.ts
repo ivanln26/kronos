@@ -20,7 +20,7 @@ export const appRouter = router({
   users: userRouter,
   courses: courseRouter,
   attendance: attendanceRouter,
-  enrollment: enrollmentRouter
+  enrollment: enrollmentRouter,
 });
 
 export type AppRouter = typeof appRouter;

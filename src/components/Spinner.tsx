@@ -1,10 +1,9 @@
-
 interface SpinnerProps {
-  width: string,
-  height: string
+  width: string;
+  height: string;
 }
 
-const Spinner = ({width = "25", height = "25"}: SpinnerProps) => {
+const Spinner = ({ width = "25", height = "25" }: SpinnerProps) => {
   return (
     <svg
       className="animate-spin fill-primary-40 dark:fill-primary-80"

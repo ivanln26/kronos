@@ -10,8 +10,8 @@ export const attendanceRouter = router({
         id: attendance.id,
         isPresent: attendance.isPresent,
         lecture: attendance.lectureId,
-        student: attendance.studentId
+        student: attendance.studentId,
       };
     });
   }),
-})
+});

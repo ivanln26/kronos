@@ -10,8 +10,8 @@ export const courseRouter = router({
         id: course.id,
         name: course.name,
         startDate: course.startDate,
-        endDate: course.endDate
+        endDate: course.endDate,
       };
     });
   }),
-})
+});

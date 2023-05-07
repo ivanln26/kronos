@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import { prisma } from "../db";
 import { procedure, router } from "../trpc";
+import { modalities, scheduleTypes, weekdays } from "../types";
 
 const formatting = new Intl.DateTimeFormat("es-AR", {
   timeZone: "UTC",
@@ -9,14 +10,22 @@ const formatting = new Intl.DateTimeFormat("es-AR", {
   minute: "numeric",
 });
 
-const editScheduleInput = z.object({
-  id: z.bigint(),
-  classroom: z.string(),
-  teacher: z.string(),
-  course: z.string(),
-  startDate: z.string(),
-  endDate: z.string(),
+const scheduleInput = z.object({
+  courseId: z.string().regex(/[0-9]*/).transform((val) => BigInt(val)),
+  classroomId: z.string().regex(/[0-9]*/).transform((val) => BigInt(val)),
+  professorId: z.string().regex(/[0-9]*/).transform((val) => BigInt(val)),
+  weekday: weekdays,
+  modality: modalities,
+  type: scheduleTypes,
+  startTime: z.string(),
+  endTime: z.string(),
 });
+
+const editScheduleInput = scheduleInput.merge(z.object({
+  id: z.string().regex(/[0-9]*/).transform((val) => BigInt(val)),
+}));
+
+export type ScheduleInput = z.infer<typeof editScheduleInput>;
 
 function formatDate(date: Date) {
   return formatting.format(date);
@@ -24,33 +33,39 @@ function formatDate(date: Date) {
 
 export const scheduleRouter = router({
   get: procedure.query(async () => {
-    const schedules = await prisma.schedule.findMany({
-      include: {
-        classroom: true,
-        user: true,
-        course: true,
+    return await prisma.schedule.findMany();
+  }),
+  create: procedure.input(scheduleInput).mutation(async ({ input }) => {
+    const result = await prisma.schedule.create({
+      data: {
+        courseId: input.courseId,
+        classroomId: input.classroomId,
+        professorId: input.professorId,
+        weekday: input.weekday,
+        modality: input.modality,
+        type: input.type,
+        startTime: "12:00:00",
+        endTime: "14:00:00",
       },
     });
-
-    return schedules.map((schedule) => {
-      return {
-        id: schedule.id,
-        classroom: schedule.classroom.id,
-        teacher:schedule.user.id,
-        course: schedule.course.id,
-        startDate: formatDate(schedule.startTime),
-        endDate: formatDate(schedule.endTime),
-      };
-    });
-  }),
-  mutate: procedure.input(editScheduleInput).mutation(async ({input}) => {
-    const startTime = new Date('1970-01-01T' + input.startDate+":00" + 'Z');
-    const endTime = new Date('1970-01-01T' + input.endDate+":00" + 'Z');
-    const result = prisma.schedule.update({
-      where: {id: input.id},
-      data: {startTime: startTime, endTime: endTime},
-    })
-    console.log(result)
+    console.log(result);
     return result;
-  },)
-})
+  }),
+  update: procedure.input(editScheduleInput).mutation(async ({ input }) => {
+    const result = await prisma.schedule.update({
+      where: { id: input.id },
+      data: {
+        courseId: input.courseId,
+        classroomId: input.classroomId,
+        professorId: input.professorId,
+        weekday: input.weekday,
+        modality: input.modality,
+        type: input.type,
+        startTime: "12:00:00",
+        endTime: "14:00:00",
+      },
+    });
+    console.log(result);
+    return result;
+  }),
+});

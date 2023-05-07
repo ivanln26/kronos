@@ -22,7 +22,7 @@ const LectureDetail: NextPage<LectureDetailProps> = ({}) => {
         {status === "loading"
           ? (
             <div className="flex justify-center py-4">
-              <Spinner />
+              <Spinner width="42" height="42" />
             </div>
           )
           : status == "error"

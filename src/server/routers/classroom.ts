@@ -12,4 +12,4 @@ export const classroomRouter = router({
       };
     });
   }),
-})
+});
