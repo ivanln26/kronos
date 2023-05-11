@@ -44,11 +44,10 @@ export const scheduleRouter = router({
         weekday: input.weekday,
         modality: input.modality,
         type: input.type,
-        startTime: "12:00:00",
-        endTime: "14:00:00",
+        startTime: new Date(`1970-01-01T${input.startTime}`),
+        endTime: new Date(`1970-01-01T${input.endTime}`),
       },
     });
-    console.log(result);
     return result;
   }),
   update: procedure.input(editScheduleInput).mutation(async ({ input }) => {
@@ -61,11 +60,10 @@ export const scheduleRouter = router({
         weekday: input.weekday,
         modality: input.modality,
         type: input.type,
-        startTime: "12:00:00",
-        endTime: "14:00:00",
+        startTime: new Date(`1970-01-01T${input.startTime}`),
+        endTime: new Date(`1970-01-01T${input.endTime}`),
       },
     });
-    console.log(result);
     return result;
   }),
 });

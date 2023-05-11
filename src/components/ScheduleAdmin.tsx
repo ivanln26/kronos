@@ -23,14 +23,28 @@ const ScheduleAdmin = () => {
     endTime: "",
   });
 
+  const { data: courses } = trpc.courses.get.useQuery();
+  const { data: classrooms } = trpc.classrooms.get.useQuery();
+  const { data: professors } = trpc.users.getTeachers.useQuery();
+
   const handleSubmit = (e: any) => {
     e.preventDefault();
-    const data = formData as any; 
+    const data = formData as any;
     if (formData.id === "") {
       create.mutate(data);
     } else {
       update.mutate(data);
     }
+  };
+
+  const updateForm = <K extends keyof StringSchedule>(
+    key: K,
+    value: StringSchedule[K],
+  ) => {
+    setFormData((prev) => {
+      prev[key] = value;
+      return { ...prev, key: value };
+    });
   };
 
   return (
@@ -42,34 +56,97 @@ const ScheduleAdmin = () => {
           value={formData.id}
           type="text"
         />
+        <label>Curso:</label>
+        <select
+          className="text-black"
+          onChange={(e) => updateForm("courseId", e.target.value)}
+          value={formData.courseId}
+        >
+          <option value="">------</option>
+          {courses &&
+            courses.map((course, i) => (
+              <option key={i} value={Number(course.id)}>{course.name}</option>
+            ))}
+        </select>
+        <label>Aula:</label>
+        <select
+          className="text-black"
+          onChange={(e) => updateForm("classroomId", e.target.value)}
+          value={formData.classroomId}
+        >
+          <option value="">------</option>
+          {classrooms &&
+            classrooms.map((classroom, i) => (
+              <option key={i} value={Number(classroom.id)}>
+                {classroom.name}
+              </option>
+            ))}
+        </select>
+        <label>Profesor:</label>
+        <select
+          className="text-black"
+          onChange={(e) => updateForm("professorId", e.target.value)}
+          value={formData.professorId}
+        >
+          <option value="">------</option>
+          {professors &&
+            professors.map((professor, i) => (
+              <option key={i} value={Number(professor.id)}>
+                {professor.name}
+              </option>
+            ))}
+        </select>
         <label>Dia de semana:</label>
         <select
           className="text-black"
-          onChange={(e) =>
-            setFormData((prev) => {
-              return { ...prev, weekday: e.target.value };
-            })}
+          onChange={(e) => updateForm("weekday", e.target.value)}
           value={formData.weekday}
         >
+          <option value="">------</option>
           <option value="monday">Lunes</option>
           <option value="tuesday">Martes</option>
           <option value="wednesday">Miercoles</option>
           <option value="thursday">Jueves</option>
           <option value="friday">Viernes</option>
         </select>
+        <label>Modalidad:</label>
         <select
           className="text-black"
-          onChange={(e) =>
-            setFormData((prev) => {
-              return { ...prev, modality: e.target.value };
-            })}
+          onChange={(e) => updateForm("modality", e.target.value)}
           value={formData.modality}
         >
+          <option value="">------</option>
           <option value="f2f">Presencial</option>
           <option value="virtual">Virtual</option>
           <option value="hybrid">Hibrido</option>
         </select>
-        <button type="submit">{formData.id === "" ? "Crear" : "Actualizar"}</button>
+        <label>Tipo:</label>
+        <select
+          className="text-black"
+          onChange={(e) => updateForm("type", e.target.value)}
+          value={formData.type}
+        >
+          <option value="">------</option>
+          <option value="theoretical">Teorica</option>
+          <option value="practical">Practica</option>
+          <option value="laboratory">Laboratorio</option>
+        </select>
+        <label>Hora de inicio:</label>
+        <input
+          className="text-black"
+          onChange={(e) => updateForm("startTime", e.target.value)}
+          value={formData.startTime}
+          pattern="\d{2}(\:\d{2})?"
+        />
+        <label>Hora de fin:</label>
+        <input
+          className="text-black"
+          onChange={(e) => updateForm("endTime", e.target.value)}
+          value={formData.endTime}
+        />
+        <button type="submit">
+          {formData.id === "" ? "Crear" : "Actualizar"}
+        </button>
       </form>
 
       <ul>
