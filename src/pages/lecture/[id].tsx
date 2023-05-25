@@ -42,7 +42,6 @@ const LectureDetail: NextPage<LectureDetailProps> = ({}) => {
     {
       name: "Notificar retraso",
       fn: () => {
-        console.log("test");
         mutation.mutate({ id, state: "delayed" });
       },
     },
