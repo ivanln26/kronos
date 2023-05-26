@@ -10,11 +10,13 @@ type ScheduleAdminProps = {
   id: string
 }
 
+const timeOptions: Intl.DateTimeFormatOptions = {hour: "2-digit", minute: "2-digit", second: undefined, hour12:false};
+
 const ScheduleAdmin = ({ id }: ScheduleAdminProps) => {
   type StringSchedule = {
     [k in keyof Schedule]: string;
   };
-
+  
   const schedule = trpc.schedules.get.useQuery({ id: id.toString() }).data
 
   const create = trpc.schedules.create.useMutation();
@@ -47,8 +49,8 @@ const ScheduleAdmin = ({ id }: ScheduleAdminProps) => {
         weekday: schedule.weekday,
         modality: schedule.modality,
         type: schedule.type,
-        startTime: schedule.startTime.toLocaleTimeString(),
-        endTime: schedule.endTime.toLocaleTimeString()
+        startTime: schedule.startTime.toLocaleTimeString(undefined, timeOptions),
+        endTime: schedule.endTime.toLocaleTimeString(undefined, timeOptions)
       })
     }
   }, [id, schedule]);

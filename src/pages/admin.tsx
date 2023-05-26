@@ -5,6 +5,8 @@ import ScheduleAdmin from "@/components/ScheduleAdmin";
 
 import { trpc } from "@/utils/trpc";
 
+const timeOptions: Intl.DateTimeFormatOptions = {hour: "2-digit", minute: "2-digit", second: undefined, hour12:false};
+
 export default function Admin() {
   type currentType = {
     id: string,
@@ -39,7 +41,7 @@ export default function Admin() {
                         <button
                           className="bg-primary"
                           onClick={() => { setCurrent({ id: schedule.id.toString(), model: "schedule" }) }}>
-                          {schedule.startTime.toLocaleTimeString()} - {schedule.endTime.toLocaleTimeString()} | {schedule.course.name}
+                          {schedule.startTime.toLocaleTimeString(undefined, timeOptions)} - {schedule.endTime.toLocaleTimeString(undefined, timeOptions)} | {schedule.course.name}
                         </button>
                       </li>
                     ))}
