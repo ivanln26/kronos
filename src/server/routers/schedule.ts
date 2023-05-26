@@ -87,4 +87,13 @@ export const scheduleRouter = router({
     });
     return result;
   }),
+
+  delete: procedure.input(z.object({ id: z.string().regex(/[0-9]*/).transform((val) => BigInt(val)) })).mutation(async ({input}) => {
+    const result = await prisma.schedule.delete({
+      where:{
+        id: input.id
+      }
+    })
+    return result;
+  })
 });

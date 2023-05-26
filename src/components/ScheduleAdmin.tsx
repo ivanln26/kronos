@@ -7,20 +7,22 @@ import AdminSelect from "./AdminSelect";
 import AdminInput from "./AdminInput";
 
 type ScheduleAdminProps = {
-  id: string
+  id: string,
+  setTriggerRefetch: Function
 }
 
-const timeOptions: Intl.DateTimeFormatOptions = {hour: "2-digit", minute: "2-digit", second: undefined, hour12:false};
+const timeOptions: Intl.DateTimeFormatOptions = { hour: "2-digit", minute: "2-digit", second: undefined, hour12: false };
 
-const ScheduleAdmin = ({ id }: ScheduleAdminProps) => {
+const ScheduleAdmin = ({ id, setTriggerRefetch }: ScheduleAdminProps) => {
   type StringSchedule = {
     [k in keyof Schedule]: string;
   };
-  
+
   const schedule = trpc.schedules.get.useQuery({ id: id.toString() }).data
 
   const create = trpc.schedules.create.useMutation();
   const update = trpc.schedules.update.useMutation();
+  const remove = trpc.schedules.delete.useMutation();
 
   useEffect(() => {
     if (id === "") {
@@ -38,7 +40,7 @@ const ScheduleAdmin = ({ id }: ScheduleAdminProps) => {
       return;
     }
     if (
-      schedule !== undefined 
+      schedule !== undefined
       && schedule !== null
       && id !== "") {
       setFormData({
@@ -71,6 +73,12 @@ const ScheduleAdmin = ({ id }: ScheduleAdminProps) => {
   const { data: classrooms } = trpc.classrooms.get.useQuery();
   const { data: professors } = trpc.users.getTeachers.useQuery();
 
+  const handleRemove = (e: any) => {
+    e.preventDefault();
+    remove.mutate({id: id})    
+    setTriggerRefetch(true)
+  };
+
   const handleSubmit = (e: any) => {
     e.preventDefault();
     const data = formData as any;
@@ -79,6 +87,7 @@ const ScheduleAdmin = ({ id }: ScheduleAdminProps) => {
     } else {
       update.mutate(data);
     }
+    setTriggerRefetch(true)
   };
 
   const updateForm = <K extends keyof StringSchedule>(
@@ -131,8 +140,10 @@ const ScheduleAdmin = ({ id }: ScheduleAdminProps) => {
         </AdminSelect>
         <AdminInput name="Hora de inicio" formKey={"startTime"} value={formData.startTime} updateForm={updateForm} pattern="\d{2}(\:\d{2})?" />
         <AdminInput name="Hora de fin" formKey="endTime" value={formData.endTime} updateForm={updateForm} pattern="\d{2}(\:\d{2})?" />
-
-        <div className="flex flex-row justify-center md:justify-end md:mr-10">
+        <div id="" className="flex flex-row justify-center md:justify-end md:mr-10 gap-2">
+          <button className="bg-red-500 w-40 md:w-80 py-1 rounded my-2" type="button" onClick={(e)=> {handleRemove(e)}}>
+            Borrar
+          </button>
           <button className="bg-blue-300 w-40 md:w-80 py-1 rounded my-2" type="submit">
             {formData.id === "" ? "Crear" : "Actualizar"}
           </button>

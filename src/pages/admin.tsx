@@ -1,22 +1,30 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import Navbar from "@/components/Navbar";
 import ScheduleAdmin from "@/components/ScheduleAdmin";
 
 import { trpc } from "@/utils/trpc";
 
-const timeOptions: Intl.DateTimeFormatOptions = {hour: "2-digit", minute: "2-digit", second: undefined, hour12:false};
+const timeOptions: Intl.DateTimeFormatOptions = { hour: "2-digit", minute: "2-digit", second: undefined, hour12: false };
 
 export default function Admin() {
   type currentType = {
     id: string,
     model: string
   };
-  const { data: schedules } = trpc.schedules.getAll.useQuery();
+  const schedules = trpc.schedules.getAll.useQuery();
 
   const [sideBar, setSideBar] = useState<[boolean, boolean]>([false, false]);
 
   const [current, setCurrent] = useState<currentType>({ id: "", model: "" });
+
+  const [triggerRefetch, setTriggerRefetch] = useState<boolean>(false)
+
+  useEffect(()=>{
+    schedules.refetch()
+    setTriggerRefetch(false)
+  }, [triggerRefetch])
+
   return (
     <>
       <Navbar />
@@ -35,8 +43,8 @@ export default function Admin() {
                       --- Nuevo horario ---
                     </button>
                   </li>
-                  {schedules &&
-                    schedules.map((schedule, i) => (
+                  {schedules.data &&
+                    schedules.data.map((schedule, i) => (
                       <li key={Number(schedule.id)}>
                         <button
                           className="bg-primary"
@@ -48,7 +56,7 @@ export default function Admin() {
                 </ul>
                 <hr className="mx-4" />
               </>}
-            <li onClick={()=>{setSideBar([sideBar[0], !sideBar[1]])}}>Lecciones</li>
+            <li onClick={() => { setSideBar([sideBar[0], !sideBar[1]]) }}>Lecciones</li>
             {
               sideBar[1] &&
               <>
@@ -60,7 +68,7 @@ export default function Admin() {
         </section>
         <section className="h-full flex flex-col md:w-screen bg-gray-500 mx-5 md:mx-2 my-5 rounded-xl
                     bg-primary-99 bg-gradient-to-r from-primary-40/[.05] to-primary-40/[.05] dark:bg-neutral-10 dark:from-primary-80/[.05] dark:to-primary-80/[.05]">
-          {current.model === "schedule" && <ScheduleAdmin id={current.id} />}
+          {current.model === "schedule" && <ScheduleAdmin id={current.id} setTriggerRefetch={setTriggerRefetch}  />}
         </section>
       </main>
     </>
