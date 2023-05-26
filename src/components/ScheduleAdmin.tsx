@@ -1,16 +1,58 @@
 import type { Schedule } from "@prisma/client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import { trpc } from "@/utils/trpc";
 
-const ScheduleAdmin = () => {
+import AdminSelect from "./AdminSelect";
+import AdminInput from "./AdminInput";
+
+type ScheduleAdminProps = {
+  id: string
+}
+
+const ScheduleAdmin = ({ id }: ScheduleAdminProps) => {
   type StringSchedule = {
     [k in keyof Schedule]: string;
   };
 
-  const { data: schedules } = trpc.schedules.get.useQuery();
+  const schedule = trpc.schedules.get.useQuery({ id: id.toString() }).data
+
   const create = trpc.schedules.create.useMutation();
   const update = trpc.schedules.update.useMutation();
+
+  useEffect(() => {
+    if (id === "") {
+      setFormData({
+        id: "",
+        courseId: "",
+        classroomId: "",
+        professorId: "",
+        weekday: "",
+        modality: "",
+        type: "",
+        startTime: "",
+        endTime: ""
+      });
+      return;
+    }
+    if (
+      schedule !== undefined 
+      && schedule !== null
+      && id !== "") {
+      setFormData({
+        id: schedule.id.toString(),
+        courseId: schedule.courseId.toString(),
+        classroomId: schedule.classroomId.toString(),
+        professorId: schedule.professorId.toString(),
+        weekday: schedule.weekday,
+        modality: schedule.modality,
+        type: schedule.type,
+        startTime: schedule.startTime.toLocaleTimeString(),
+        endTime: schedule.endTime.toLocaleTimeString()
+      })
+    }
+  }, [id, schedule]);
+
   const [formData, setFormData] = useState<StringSchedule>({
     id: "",
     courseId: "",
@@ -49,131 +91,51 @@ const ScheduleAdmin = () => {
 
   return (
     <div>
-      <form onSubmit={handleSubmit}>
-        <input
-          className="hidden"
-          onChange={() => {}}
-          value={formData.id}
-          type="text"
-        />
-        <label>Curso:</label>
-        <select
-          className="text-black"
-          onChange={(e) => updateForm("courseId", e.target.value)}
-          value={formData.courseId}
-        >
-          <option value="">------</option>
+      <form onSubmit={handleSubmit} className="flex flex-col">
+        <AdminSelect name="Curso" formKey="courseId" value={formData.courseId} updateForm={updateForm}>
           {courses &&
             courses.map((course, i) => (
               <option key={i} value={Number(course.id)}>{course.name}</option>
             ))}
-        </select>
-        <label>Aula:</label>
-        <select
-          className="text-black"
-          onChange={(e) => updateForm("classroomId", e.target.value)}
-          value={formData.classroomId}
-        >
-          <option value="">------</option>
+        </AdminSelect>
+        <AdminSelect name="Aula" formKey="classroomId" value={formData.classroomId} updateForm={updateForm}>
           {classrooms &&
             classrooms.map((classroom, i) => (
-              <option key={i} value={Number(classroom.id)}>
-                {classroom.name}
-              </option>
+              <option key={i} value={Number(classroom.id)}>{classroom.name}</option>
             ))}
-        </select>
-        <label>Profesor:</label>
-        <select
-          className="text-black"
-          onChange={(e) => updateForm("professorId", e.target.value)}
-          value={formData.professorId}
-        >
-          <option value="">------</option>
+        </AdminSelect>
+        <AdminSelect name="Profesor" formKey="professorId" value={formData.professorId} updateForm={updateForm}>
           {professors &&
             professors.map((professor, i) => (
-              <option key={i} value={Number(professor.id)}>
-                {professor.name}
-              </option>
+              <option key={i} value={Number(professor.id)}>{professor.name}</option>
             ))}
-        </select>
-        <label>Dia de semana:</label>
-        <select
-          className="text-black"
-          onChange={(e) => updateForm("weekday", e.target.value)}
-          value={formData.weekday}
-        >
-          <option value="">------</option>
+        </AdminSelect>
+        <AdminSelect name="Dia de la semana" formKey={"weekday"} value={formData.weekday} updateForm={updateForm}>
           <option value="monday">Lunes</option>
           <option value="tuesday">Martes</option>
           <option value="wednesday">Miercoles</option>
           <option value="thursday">Jueves</option>
           <option value="friday">Viernes</option>
-        </select>
-        <label>Modalidad:</label>
-        <select
-          className="text-black"
-          onChange={(e) => updateForm("modality", e.target.value)}
-          value={formData.modality}
-        >
-          <option value="">------</option>
+        </AdminSelect>
+        <AdminSelect name={"Modalidad"} formKey="modality" value={formData.modality} updateForm={updateForm}>
           <option value="f2f">Presencial</option>
           <option value="virtual">Virtual</option>
           <option value="hybrid">Hibrido</option>
-        </select>
-        <label>Tipo:</label>
-        <select
-          className="text-black"
-          onChange={(e) => updateForm("type", e.target.value)}
-          value={formData.type}
-        >
-          <option value="">------</option>
+        </AdminSelect>
+        <AdminSelect name="Tipo" formKey="type" value={formData.type} updateForm={updateForm} >
           <option value="theoretical">Teorica</option>
           <option value="practical">Practica</option>
           <option value="laboratory">Laboratorio</option>
-        </select>
-        <label>Hora de inicio:</label>
-        <input
-          className="text-black"
-          onChange={(e) => updateForm("startTime", e.target.value)}
-          value={formData.startTime}
-          pattern="\d{2}(\:\d{2})?"
-        />
-        <label>Hora de fin:</label>
-        <input
-          className="text-black"
-          onChange={(e) => updateForm("endTime", e.target.value)}
-          value={formData.endTime}
-        />
-        <button type="submit">
-          {formData.id === "" ? "Crear" : "Actualizar"}
-        </button>
-      </form>
+        </AdminSelect>
+        <AdminInput name="Hora de inicio" formKey={"startTime"} value={formData.startTime} updateForm={updateForm} pattern="\d{2}(\:\d{2})?" />
+        <AdminInput name="Hora de fin" formKey="endTime" value={formData.endTime} updateForm={updateForm} pattern="\d{2}(\:\d{2})?" />
 
-      <ul>
-        {schedules &&
-          schedules.map((schedule, i) => (
-            <li key={i}>
-              <button
-                onClick={() =>
-                  setFormData({
-                    id: schedule.id.toString(),
-                    courseId: schedule.courseId.toString(),
-                    classroomId: schedule.classroomId.toString(),
-                    professorId: schedule.professorId.toString(),
-                    weekday: schedule.weekday,
-                    modality: schedule.modality,
-                    type: schedule.type,
-                    startTime: schedule.startTime.toString(),
-                    endTime: schedule.endTime.toString(),
-                  })}
-              >
-                {Number(schedule.id)}
-              </button>
-              {schedule.weekday}
-              {schedule.modality}
-            </li>
-          ))}
-      </ul>
+        <div className="flex flex-row justify-center md:justify-end md:mr-10">
+          <button className="bg-blue-300 w-40 md:w-80 py-1 rounded my-2" type="submit">
+            {formData.id === "" ? "Crear" : "Actualizar"}
+          </button>
+        </div>
+      </form>
     </div>
   );
 };

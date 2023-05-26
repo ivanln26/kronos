@@ -32,9 +32,30 @@ function formatDate(date: Date) {
 }
 
 export const scheduleRouter = router({
-  get: procedure.query(async () => {
-    return await prisma.schedule.findMany();
+  getAll: procedure.query(async () => {
+    const schedules = await prisma.schedule.findMany(
+      {
+        include: {
+          course: true
+        }
+      }
+    )
+    return schedules.map((schedule) => {
+      return {
+        id: schedule.id,
+        startTime: schedule.startTime,
+        endTime: schedule.endTime,
+        course: schedule.course
+      }
+    });
   }),
+
+  get: procedure.input(z.object({ id: z.string().regex(/[0-9]*/).transform((val) => BigInt(val)) })).query(async ({ input }) => {
+    return prisma.schedule.findFirst({
+      where: { id: input.id }
+    })
+  }),
+
   create: procedure.input(scheduleInput).mutation(async ({ input }) => {
     const result = await prisma.schedule.create({
       data: {
