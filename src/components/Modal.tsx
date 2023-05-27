@@ -1,10 +1,12 @@
+import { Dispatch, SetStateAction } from "react";
+
 interface ModalProps {
   isOpen: boolean;
-  onClose: () => void;
+  setModal: Dispatch<SetStateAction<boolean>>;
   children: React.ReactNode;
 }
 
-export default function Modal({ isOpen, onClose, children }: ModalProps) {
+export default function Modal({ isOpen, setModal, children }: ModalProps) {
   if (!isOpen) return null;
 
   return (
@@ -13,7 +15,7 @@ export default function Modal({ isOpen, onClose, children }: ModalProps) {
         <div className="fixed inset-0 transition-opacity">
           <div
             className="absolute inset-0 bg-gray-500 opacity-75"
-            onClick={onClose}
+            onClick={() => {setModal(false)}}
           />
         </div>
         <div className="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all ">

@@ -5,6 +5,7 @@ import { trpc } from "@/utils/trpc";
 
 import AdminSelect from "./AdminSelect";
 import AdminInput from "./AdminInput";
+import Modal from "./Modal";
 
 type ScheduleAdminProps = {
   id: string,
@@ -17,6 +18,9 @@ const ScheduleAdmin = ({ id, setTriggerRefetch }: ScheduleAdminProps) => {
   type StringSchedule = {
     [k in keyof Schedule]: string;
   };
+
+  const [modalIsOpen, setModal] = useState<boolean>(false)
+  const [modalContent, setModalContent] = useState<React.ReactNode>()
 
   const schedule = trpc.schedules.get.useQuery({ id: id.toString() }).data
 
@@ -74,19 +78,59 @@ const ScheduleAdmin = ({ id, setTriggerRefetch }: ScheduleAdminProps) => {
   const { data: professors } = trpc.users.getTeachers.useQuery();
 
   const handleRemove = (e: any) => {
-    e.preventDefault();
-    remove.mutate({id: id})    
+    remove.mutate({ id: id })
+    setModalContent(
+      <div className="flex flex-col justify-center m-4 gap-5">
+        <h1 className="text-black">¡operación realizada con exito!</h1>
+        <button className="bg-blue-300 rounded p-1 px-2" onClick={() => { setModal(false) }}>Cerrar</button>
+      </div>
+    );
     setTriggerRefetch(true)
   };
 
-  const handleSubmit = (e: any) => {
+  const handleModal = (e: any) => {
     e.preventDefault();
+    console.log(e.type)
+    if (e.type === "submit") { // boton 'crear' o 'actualizar'
+      setModalContent(
+        <>
+          <div className="m-5">
+            <h1 className="text-black">¿Esta seguro que desea realizar esta operación?</h1>
+            <div className="flex flex-row w-full mt-3 gap-10 justify-center">
+              <button className="bg-red-500 rounded p-1 px-2" onClick={() => { setModal(false) }}>Cancelar</button>
+              <button className="bg-blue-300 rounded p-1 px-2" onClick={() => { handleSubmit(e) }}>Aceptar</button>
+            </div>
+          </div>
+        </>
+      );
+    }
+    else if (e.type === "click") { // Se clickeo el boton 'borrar'
+      setModalContent(
+        <div className="m-5">
+          <h1 className="text-black">¿Esta seguro que desea realizar esta operación?</h1>
+          <div className="flex flex-row w-full mt-3 gap-10 justify-center">
+            <button className="bg-red-500 rounded p-1 px-2" onClick={() => { setModal(false) }}>Cancelar</button>
+            <button className="bg-blue-300 rounded p-1 px-2" onClick={() => { handleRemove(e) }}>Aceptar</button>
+          </div>
+        </div>
+      );
+    }
+    setModal(true)
+  }
+
+  const handleSubmit = (e: any) => {
     const data = formData as any;
     if (formData.id === "") {
       create.mutate(data);
     } else {
       update.mutate(data);
     }
+    setModalContent(
+      <div className="flex flex-col justify-center m-4 gap-5">
+        <h1 className="text-black">¡operación realizada con exito!</h1>
+        <button className="bg-blue-300 rounded p-1 px-2" onClick={() => { setModal(false) }}>Cerrar</button>
+      </div>
+    )
     setTriggerRefetch(true)
   };
 
@@ -102,7 +146,10 @@ const ScheduleAdmin = ({ id, setTriggerRefetch }: ScheduleAdminProps) => {
 
   return (
     <div>
-      <form onSubmit={handleSubmit} className="flex flex-col">
+      <Modal isOpen={modalIsOpen} setModal={setModal} >
+        {modalContent}
+      </Modal>
+      <form onSubmit={handleModal} className="flex flex-col">
         <AdminSelect name="Curso" formKey="courseId" value={formData.courseId} updateForm={updateForm}>
           {courses &&
             courses.map((course, i) => (
@@ -141,7 +188,7 @@ const ScheduleAdmin = ({ id, setTriggerRefetch }: ScheduleAdminProps) => {
         <AdminInput name="Hora de inicio" formKey={"startTime"} value={formData.startTime} updateForm={updateForm} pattern="\d{2}(\:\d{2})?" />
         <AdminInput name="Hora de fin" formKey="endTime" value={formData.endTime} updateForm={updateForm} pattern="\d{2}(\:\d{2})?" />
         <div id="" className="flex flex-row justify-center md:justify-end md:mr-10 gap-2">
-          <button className="bg-red-500 w-40 md:w-80 py-1 rounded my-2" type="button" onClick={(e)=> {handleRemove(e)}}>
+          <button className="bg-red-500 w-40 md:w-80 py-1 rounded my-2" type="button" onClick={(e) => { handleModal(e) }}>
             Borrar
           </button>
           <button className="bg-blue-300 w-40 md:w-80 py-1 rounded my-2" type="submit">
