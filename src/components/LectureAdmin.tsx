@@ -148,12 +148,14 @@ const LectureAdmin = ({ id, setTriggerRefetch }: LectureAdminProps) => {
                 </AdminLectureSelect>
                 <div className="flex flex-col justify-items-center mx-6 my-4">
                     <label className="mr-2 block mx-5">Selecciona una fecha:</label>
-                    <input type="date" name="date" onChange={(e) => {updateForm("date", e.target.value)}} value={formData.date} className="text-black border rounded p-1 mx-5" />
+                    <input type="date" name="date" onChange={(e) => { updateForm("date", e.target.value) }} value={formData.date} className="text-black border rounded p-1 mx-5" />
                 </div>
                 <div id="" className="flex flex-row justify-center md:justify-end md:mr-10 gap-2">
-                    <button className="bg-red-500 w-40 md:w-80 py-1 rounded my-2" type="button" onClick={(e) => { handleModal(e) }}>
-                        Borrar
-                    </button>
+                    {formData.id !== "" &&
+                        <button className="bg-red-500 w-40 md:w-80 py-1 rounded my-2" type="button" onClick={(e) => { handleModal(e) }}>
+                            Borrar
+                        </button>
+                    }
                     <button className="bg-blue-300 w-40 md:w-80 py-1 rounded my-2" type="submit">
                         {formData.id === "" ? "Crear" : "Actualizar"}
                     </button>

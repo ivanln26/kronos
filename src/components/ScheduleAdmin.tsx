@@ -188,9 +188,10 @@ const ScheduleAdmin = ({ id, setTriggerRefetch }: ScheduleAdminProps) => {
         <AdminInput name="Hora de inicio" formKey={"startTime"} value={formData.startTime} updateForm={updateForm} pattern="\d{2}(\:\d{2})?" />
         <AdminInput name="Hora de fin" formKey="endTime" value={formData.endTime} updateForm={updateForm} pattern="\d{2}(\:\d{2})?" />
         <div id="" className="flex flex-row justify-center md:justify-end md:mr-10 gap-2">
-          <button className="bg-red-500 w-40 md:w-80 py-1 rounded my-2" type="button" onClick={(e) => { handleModal(e) }}>
-            Borrar
-          </button>
+          {formData.id !== "" &&
+            <button className="bg-red-500 w-40 md:w-80 py-1 rounded my-2" type="button" onClick={(e) => { handleModal(e) }}>
+              Borrar
+            </button>}
           <button className="bg-blue-300 w-40 md:w-80 py-1 rounded my-2" type="submit">
             {formData.id === "" ? "Crear" : "Actualizar"}
           </button>
