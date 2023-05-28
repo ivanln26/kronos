@@ -100,12 +100,14 @@ const LectureAdmin = ({ id, setTriggerRefetch }: LectureAdminProps) => {
         setModal(true)
     }
 
-    const handleSubmit = (e: any) => {
+    const handleSubmit = async (e: any) => {
         const data = formData as any;
         if (formData.id === "") {
-            create.mutate(data);
+            const res = await create.mutate(data);
+            console.log(res)
         } else {
-            update.mutate(data);
+            const res = await update.mutate(data); // res es undefined?
+            console.log(res)
         }
         setModalContent(
             <div className="flex flex-col justify-center m-4 gap-5">
@@ -135,7 +137,7 @@ const LectureAdmin = ({ id, setTriggerRefetch }: LectureAdminProps) => {
                 <AdminLectureSelect name="schedule" formKey="scheduleId" value={formData.scheduleId} updateForm={updateForm}>
                     {
                         schedules &&
-                        schedules.map((schedule) => { return <option key={Number(schedule.id)} value={schedule.id.toString()}>{schedule.course.name}</option> })
+                        schedules.map((schedule) => { return <option key={Number(schedule.id)} value={schedule.id.toString()}>{schedule.course.name} {schedule.type[0].toUpperCase()}</option> })
                     }
                 </AdminLectureSelect>
                 <AdminLectureSelect name="estado" formKey="state" value={formData.state} updateForm={updateForm}>

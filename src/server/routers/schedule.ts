@@ -45,7 +45,8 @@ export const scheduleRouter = router({
         id: schedule.id,
         startTime: schedule.startTime,
         endTime: schedule.endTime,
-        course: schedule.course
+        course: schedule.course,
+        type: schedule.type
       }
     });
   }),
