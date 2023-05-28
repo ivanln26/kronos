@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 
 import { trpc } from "@/utils/trpc";
 
-import AdminSelect from "./AdminSelect";
+import AdminSelect from "./AdminScheduleSelect";
 import AdminInput from "./AdminInput";
 import Modal from "./Modal";
 

@@ -14,6 +14,16 @@ function formatDate(date: Date) {
   return formatting.format(date);
 }
 
+const lectureInput = z.object({
+  schedule_id: z.string().regex(/[0-9]*/).transform((val) => BigInt(val)),
+  state: z.enum(['scheduled', 'ongoing', 'cancelled', 'delayed']),
+  date: z.date(),
+});
+
+const editLectureInput = lectureInput.merge(z.object({
+  id: z.string().regex(/[0-9]*/).transform((val) => BigInt(val)),
+}));
+
 export const lectureRouter = router({
   get: procedure.input(
     z.string().regex(/[0-9]*/).transform((val) => Number(val)),
@@ -39,11 +49,13 @@ export const lectureRouter = router({
 
     return {
       id: lecture.id,
+      scheduleId: lecture.scheduleId,
       classroom: lecture.schedules.classroom.name,
       teacher:
         `${lecture.schedules.user.lastName.toUpperCase()}, ${lecture.schedules.user.name}`,
       course: lecture.schedules.course.name,
       state: lecture.state,
+      date: lecture.date,
       startDate: formatDate(lecture.schedules.startTime),
       endDate: formatDate(lecture.schedules.endTime),
     };
@@ -92,4 +104,33 @@ export const lectureRouter = router({
       };
     });
   }),
+  create: procedure.input(lectureInput).mutation(async ({ input }) => {
+    const result = await prisma.lecture.create({
+      data: {
+        scheduleId: input.schedule_id,
+        date: input.date,
+        state: input.state
+      }
+    });
+    return result;
+  }),
+
+  update: procedure.input(editLectureInput).mutation(async ({ input }) => {
+    const result = await prisma.lecture.update({
+      where: { id: input.id },
+      data: {
+        scheduleId: input.schedule_id,
+        date: input.date,
+        state: input.state
+      }
+    });
+    return result;
+  }),
+
+  delete: procedure.input(z.object({ id: z.string().regex(/[0-9]*/).transform((val) => BigInt(val)) })).mutation(async ({input}) => {
+    const result = await prisma.lecture.delete({
+      where:{id: input.id}
+    })
+  })
+
 });

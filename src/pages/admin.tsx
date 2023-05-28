@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar";
 import ScheduleAdmin from "@/components/ScheduleAdmin";
 
 import { trpc } from "@/utils/trpc";
+import LectureAdmin from "@/components/LectureAdmin";
 
 const timeOptions: Intl.DateTimeFormatOptions = { hour: "2-digit", minute: "2-digit", second: undefined, hour12: false };
 
@@ -13,6 +14,7 @@ export default function Admin() {
     model: string
   };
   const schedules = trpc.schedules.getAll.useQuery();
+  const lectures = trpc.lecture.getAll.useQuery();
 
   const [sideBar, setSideBar] = useState<[boolean, boolean]>([false, false]);
 
@@ -61,6 +63,16 @@ export default function Admin() {
               sideBar[1] &&
               <>
                 <hr className="mx-4" />
+                {lectures.data &&
+                    lectures.data.map((lecture, i) => (
+                      <li key={Number(lecture.id)}>
+                        <button
+                          className="bg-primary"
+                          onClick={() => { setCurrent({ id: lecture.id.toString(), model: "lecture" }) }}>
+                          {Number(lecture.schedule)} - {lecture.date.toLocaleDateString()}
+                        </button>
+                      </li>
+                    ))}
               </>
             }
           </ul>
@@ -69,6 +81,7 @@ export default function Admin() {
         <section className="h-full flex flex-col md:w-screen bg-gray-500 mx-5 md:mx-2 my-5 rounded-xl
                     bg-primary-99 bg-gradient-to-r from-primary-40/[.05] to-primary-40/[.05] dark:bg-neutral-10 dark:from-primary-80/[.05] dark:to-primary-80/[.05]">
           {current.model === "schedule" && <ScheduleAdmin id={current.id} setTriggerRefetch={setTriggerRefetch}  />}
+          {current.model === "lecture" && <LectureAdmin id={current.id} setTriggerRefetch={setTriggerRefetch}  />}
         </section>
       </main>
     </>

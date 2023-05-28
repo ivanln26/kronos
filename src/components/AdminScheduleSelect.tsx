@@ -4,8 +4,10 @@ type StringSchedule = {
     [k in keyof Schedule]: string;
 };
 
+type updateFormFunc = <K extends keyof StringSchedule>(name: K, value: StringSchedule[K]) => void;
+
 interface AdminSelectProps {
-    updateForm: <K extends keyof StringSchedule>(name: K, value: StringSchedule[K]) => void;
+    updateForm: updateFormFunc;
     formKey: keyof StringSchedule,
     value: string;
     name: string;
@@ -24,7 +26,6 @@ export default function AdminSelect({ updateForm, formKey, value, name, children
             >
                 <option value="">------</option>
                 {children}
-
             </select>
         </div>
     );
