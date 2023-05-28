@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { ZodDate, z } from "zod";
 
 import { prisma } from "../db";
 import { procedure, router } from "../trpc";
@@ -15,9 +15,9 @@ function formatDate(date: Date) {
 }
 
 const lectureInput = z.object({
-  schedule_id: z.string().regex(/[0-9]*/).transform((val) => BigInt(val)),
-  state: z.enum(['scheduled', 'ongoing', 'cancelled', 'delayed']),
-  date: z.date(),
+  scheduleId: z.string().regex(/[0-9]*/).transform((val) => BigInt(val)),
+  state: z.enum(['scheduled', 'ongoing', 'canceled', 'delayed']),
+  date: z.string(),
 });
 
 const editLectureInput = lectureInput.merge(z.object({
@@ -61,12 +61,20 @@ export const lectureRouter = router({
     };
   }),
   getAll: procedure.query(async () => {
-    const lectures = await prisma.lecture.findMany({});
+    const lectures = await prisma.lecture.findMany({
+      include:{
+        schedules: {
+          include: {
+            course: true
+          }
+        }
+      }
+    });
     return lectures.map((lecture) => {
       return {
         id: lecture.id,
         date: lecture.date,
-        schedule: lecture.scheduleId,
+        schedule: lecture.schedules,
       };
     });
   }),
@@ -107,8 +115,8 @@ export const lectureRouter = router({
   create: procedure.input(lectureInput).mutation(async ({ input }) => {
     const result = await prisma.lecture.create({
       data: {
-        scheduleId: input.schedule_id,
-        date: input.date,
+        scheduleId: input.scheduleId,
+        date: new Date(input.date),
         state: input.state
       }
     });
@@ -119,8 +127,8 @@ export const lectureRouter = router({
     const result = await prisma.lecture.update({
       where: { id: input.id },
       data: {
-        scheduleId: input.schedule_id,
-        date: input.date,
+        scheduleId: input.scheduleId,
+        date: new Date(input.date),
         state: input.state
       }
     });

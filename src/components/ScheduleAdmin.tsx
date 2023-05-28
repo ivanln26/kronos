@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 
 import { trpc } from "@/utils/trpc";
 
-import AdminSelect from "./AdminScheduleSelect";
+import AdminScheduleSelect from "./AdminScheduleSelect";
 import AdminInput from "./AdminInput";
 import Modal from "./Modal";
 
@@ -150,41 +150,41 @@ const ScheduleAdmin = ({ id, setTriggerRefetch }: ScheduleAdminProps) => {
         {modalContent}
       </Modal>
       <form onSubmit={handleModal} className="flex flex-col">
-        <AdminSelect name="Curso" formKey="courseId" value={formData.courseId} updateForm={updateForm}>
+        <AdminScheduleSelect name="Curso" formKey="courseId" value={formData.courseId} updateForm={updateForm}>
           {courses &&
             courses.map((course, i) => (
               <option key={i} value={Number(course.id)}>{course.name}</option>
             ))}
-        </AdminSelect>
-        <AdminSelect name="Aula" formKey="classroomId" value={formData.classroomId} updateForm={updateForm}>
+        </AdminScheduleSelect>
+        <AdminScheduleSelect name="Aula" formKey="classroomId" value={formData.classroomId} updateForm={updateForm}>
           {classrooms &&
             classrooms.map((classroom, i) => (
               <option key={i} value={Number(classroom.id)}>{classroom.name}</option>
             ))}
-        </AdminSelect>
-        <AdminSelect name="Profesor" formKey="professorId" value={formData.professorId} updateForm={updateForm}>
+        </AdminScheduleSelect>
+        <AdminScheduleSelect name="Profesor" formKey="professorId" value={formData.professorId} updateForm={updateForm}>
           {professors &&
             professors.map((professor, i) => (
               <option key={i} value={Number(professor.id)}>{professor.name}</option>
             ))}
-        </AdminSelect>
-        <AdminSelect name="Dia de la semana" formKey={"weekday"} value={formData.weekday} updateForm={updateForm}>
+        </AdminScheduleSelect>
+        <AdminScheduleSelect name="Dia de la semana" formKey={"weekday"} value={formData.weekday} updateForm={updateForm}>
           <option value="monday">Lunes</option>
           <option value="tuesday">Martes</option>
           <option value="wednesday">Miercoles</option>
           <option value="thursday">Jueves</option>
           <option value="friday">Viernes</option>
-        </AdminSelect>
-        <AdminSelect name={"Modalidad"} formKey="modality" value={formData.modality} updateForm={updateForm}>
+        </AdminScheduleSelect>
+        <AdminScheduleSelect name={"Modalidad"} formKey="modality" value={formData.modality} updateForm={updateForm}>
           <option value="f2f">Presencial</option>
           <option value="virtual">Virtual</option>
           <option value="hybrid">Hibrido</option>
-        </AdminSelect>
-        <AdminSelect name="Tipo" formKey="type" value={formData.type} updateForm={updateForm} >
+        </AdminScheduleSelect>
+        <AdminScheduleSelect name="Tipo" formKey="type" value={formData.type} updateForm={updateForm} >
           <option value="theoretical">Teorica</option>
           <option value="practical">Practica</option>
           <option value="laboratory">Laboratorio</option>
-        </AdminSelect>
+        </AdminScheduleSelect>
         <AdminInput name="Hora de inicio" formKey={"startTime"} value={formData.startTime} updateForm={updateForm} pattern="\d{2}(\:\d{2})?" />
         <AdminInput name="Hora de fin" formKey="endTime" value={formData.endTime} updateForm={updateForm} pattern="\d{2}(\:\d{2})?" />
         <div id="" className="flex flex-row justify-center md:justify-end md:mr-10 gap-2">

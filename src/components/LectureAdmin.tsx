@@ -3,8 +3,7 @@ import { useState, useEffect } from "react";
 
 import { trpc } from "@/utils/trpc";
 
-import AdminSelect from "./AdminScheduleSelect";
-import AdminInput from "./AdminInput";
+import AdminLectureSelect from "./AdminLectureSelect";
 import Modal from "./Modal";
 
 type LectureAdminProps = {
@@ -46,7 +45,7 @@ const LectureAdmin = ({ id, setTriggerRefetch }: LectureAdminProps) => {
                 id: lecture.id.toString(),
                 scheduleId: lecture.scheduleId.toString(),
                 state: lecture.state,
-                date: lecture.date.toLocaleDateString()
+                date: lecture.date.toISOString().split("T")[0]
             })
         }
     }, [id, lecture]);
@@ -133,6 +132,22 @@ const LectureAdmin = ({ id, setTriggerRefetch }: LectureAdminProps) => {
                 {modalContent}
             </Modal>
             <form onSubmit={handleModal} className="flex flex-col">
+                <AdminLectureSelect name="schedule" formKey="scheduleId" value={formData.scheduleId} updateForm={updateForm}>
+                    {
+                        schedules &&
+                        schedules.map((schedule) => { return <option key={Number(schedule.id)} value={schedule.id.toString()}>{schedule.course.name}</option> })
+                    }
+                </AdminLectureSelect>
+                <AdminLectureSelect name="estado" formKey="state" value={formData.state} updateForm={updateForm}>
+                    <option value="scheduled">Apuntada</option>
+                    <option value="ongoing">En curso</option>
+                    <option value="canceled">Cancelada</option>
+                    <option value="delayed">Demorada</option>
+                </AdminLectureSelect>
+                <div className="flex flex-col justify-items-center mx-6 my-4">
+                    <label className="mr-2 block mx-5">Selecciona una fecha:</label>
+                    <input type="date" name="date" onChange={(e) => {updateForm("date", e.target.value)}} value={formData.date} className="text-black border rounded p-1 mx-5" />
+                </div>
                 <div id="" className="flex flex-row justify-center md:justify-end md:mr-10 gap-2">
                     <button className="bg-red-500 w-40 md:w-80 py-1 rounded my-2" type="button" onClick={(e) => { handleModal(e) }}>
                         Borrar

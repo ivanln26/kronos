@@ -14,7 +14,7 @@ interface AdminSelectProps {
     children: React.ReactNode;
 }
 
-export default function AdminSelect({ updateForm, formKey, value, name, children }: AdminSelectProps) {
+export default function AdminScheduleSelect({ updateForm, formKey, value, name, children }: AdminSelectProps) {
     return (
         <div className="flex flex-col justify-items-center mx-6 my-4">
 

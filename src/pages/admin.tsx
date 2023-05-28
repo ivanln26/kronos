@@ -22,8 +22,9 @@ export default function Admin() {
 
   const [triggerRefetch, setTriggerRefetch] = useState<boolean>(false)
 
-  useEffect(()=>{
+  useEffect(() => {
     schedules.refetch()
+    lectures.refetch()
     setTriggerRefetch(false)
   }, [triggerRefetch])
 
@@ -63,16 +64,24 @@ export default function Admin() {
               sideBar[1] &&
               <>
                 <hr className="mx-4" />
-                {lectures.data &&
+                <ul>
+                  <li>
+                    <button className="bg-primary"
+                      onClick={() => { setCurrent({ id: "", model: "lecture" }) }}>
+                      --- Nueva lección ---
+                    </button>
+                  </li>
+                  {lectures.data &&
                     lectures.data.map((lecture, i) => (
                       <li key={Number(lecture.id)}>
                         <button
                           className="bg-primary"
                           onClick={() => { setCurrent({ id: lecture.id.toString(), model: "lecture" }) }}>
-                          {Number(lecture.schedule)} - {lecture.date.toLocaleDateString()}
+                          {lecture.schedule.course.name} {lecture.schedule.type[0].toUpperCase()} - {lecture.date.toISOString().split("T")[0]}
                         </button>
                       </li>
                     ))}
+                </ul>
               </>
             }
           </ul>
@@ -80,8 +89,8 @@ export default function Admin() {
         </section>
         <section className="h-full flex flex-col md:w-screen bg-gray-500 mx-5 md:mx-2 my-5 rounded-xl
                     bg-primary-99 bg-gradient-to-r from-primary-40/[.05] to-primary-40/[.05] dark:bg-neutral-10 dark:from-primary-80/[.05] dark:to-primary-80/[.05]">
-          {current.model === "schedule" && <ScheduleAdmin id={current.id} setTriggerRefetch={setTriggerRefetch}  />}
-          {current.model === "lecture" && <LectureAdmin id={current.id} setTriggerRefetch={setTriggerRefetch}  />}
+          {current.model === "schedule" && <ScheduleAdmin id={current.id} setTriggerRefetch={setTriggerRefetch} />}
+          {current.model === "lecture" && <LectureAdmin id={current.id} setTriggerRefetch={setTriggerRefetch} />}
         </section>
       </main>
     </>
