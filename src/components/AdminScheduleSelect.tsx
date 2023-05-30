@@ -20,6 +20,7 @@ export default function AdminScheduleSelect({ updateForm, formKey, value, name, 
 
             <label className="mr-2 block mx-5">{name}</label>
             <select
+                required
                 className="text-black border rounded p-1 mx-5"
                 onChange={(e) => updateForm(formKey, e.target.value)}
                 value={value}

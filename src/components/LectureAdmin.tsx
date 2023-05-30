@@ -102,12 +102,28 @@ const LectureAdmin = ({ id, setTriggerRefetch }: LectureAdminProps) => {
 
     const handleSubmit = async (e: any) => {
         const data = formData as any;
+        let flag = false;
+
+        Object.values(formData).forEach(value => {
+            if (value === "") {
+                flag = true;
+                return;
+            }
+        });
+        if (flag) {
+            setModalContent(
+                <div className="flex flex-col justify-center m-4 gap-5">
+                    <h1 className="text-black">Operación fallida</h1>
+                    <button className="bg-blue-300 rounded p-1 px-2" onClick={() => { setModal(false) }}>Cerrar</button>
+                </div>
+            )
+        }
         if (formData.id === "") {
             const res = await create.mutate(data);
             console.log(res)
+            console.log("hola; ", update)
         } else {
             const res = await update.mutate(data); // res es undefined?
-            console.log(res)
         }
         setModalContent(
             <div className="flex flex-col justify-center m-4 gap-5">
@@ -148,7 +164,7 @@ const LectureAdmin = ({ id, setTriggerRefetch }: LectureAdminProps) => {
                 </AdminLectureSelect>
                 <div className="flex flex-col justify-items-center mx-6 my-4">
                     <label className="mr-2 block mx-5">Selecciona una fecha:</label>
-                    <input type="date" name="date" onChange={(e) => { updateForm("date", e.target.value) }} value={formData.date} className="text-black border rounded p-1 mx-5" />
+                    <input required type="date" name="date" onChange={(e) => { updateForm("date", e.target.value) }} value={formData.date} className="text-black border rounded p-1 mx-5" />
                 </div>
                 <div id="" className="flex flex-row justify-center md:justify-end md:mr-10 gap-2">
                     {formData.id !== "" &&

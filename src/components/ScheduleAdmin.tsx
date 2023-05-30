@@ -91,6 +91,20 @@ const ScheduleAdmin = ({ id, setTriggerRefetch }: ScheduleAdminProps) => {
   const handleModal = (e: any) => {
     e.preventDefault();
     console.log(e.type)
+    if (!checkTime(formData.startTime) || !checkTime(formData.endTime)){
+       setModalContent(
+        <>
+          <div className="m-5">
+            <h1 className="text-black">Los campos startTime y EndTime tienen que cumplir el formato HH:MM</h1>
+            <div className="flex flex-row w-full mt-3 gap-10 justify-center">
+              <button className="bg-red-500 rounded p-1 px-2" onClick={() => { setModal(false) }}>Cancelar</button>
+            </div>
+          </div>
+        </>
+      );
+      setModal(true)
+      return;
+    }
     if (e.type === "submit") { // boton 'crear' o 'actualizar'
       setModalContent(
         <>
@@ -116,6 +130,11 @@ const ScheduleAdmin = ({ id, setTriggerRefetch }: ScheduleAdminProps) => {
       );
     }
     setModal(true)
+  }
+
+  const checkTime = (time: string) => {
+    const timePattern = /^\d{2}\:\d{2}?$/i;
+    return timePattern.test(time)
   }
 
   const handleSubmit = (e: any) => {

@@ -23,6 +23,7 @@ export default function AdminLectureSelect({ updateForm, formKey, value, name, c
                 className="text-black border rounded p-1 mx-5"
                 onChange={(e) => updateForm(formKey, e.target.value)}
                 value={value}
+                required
             >
                 <option value="">------</option>
                 {children}

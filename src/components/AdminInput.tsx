@@ -18,10 +18,12 @@ export default function AdminInput({ updateForm, formKey, value, name, pattern="
 
             <label className="mr-2 block mx-5">{name}</label>
             <input
+                title="Eight or more characters"
                 className="text-black border rounded p-1 mx-5"
                 onChange={(e) => updateForm(formKey, e.target.value)}
                 value={value}
                 pattern={pattern}
+                required
             />
         </div>
     );
