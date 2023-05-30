@@ -55,8 +55,8 @@ const ScheduleAdmin = ({ id, setTriggerRefetch }: ScheduleAdminProps) => {
         weekday: schedule.weekday,
         modality: schedule.modality,
         type: schedule.type,
-        startTime: schedule.startTime.toLocaleTimeString(undefined, timeOptions),
-        endTime: schedule.endTime.toLocaleTimeString(undefined, timeOptions)
+        startTime: schedule.startTime,
+        endTime: schedule.endTime
       })
     }
   }, [id, schedule]);

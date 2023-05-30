@@ -5,7 +5,7 @@ import { procedure, router } from "../trpc";
 import { weekdays } from "../types";
 
 const formatting = new Intl.DateTimeFormat("es-AR", {
-  timeZone: "UTC",
+  timeZone: "America/Argentina/Cordoba",
   hour: "numeric",
   minute: "numeric",
 });
@@ -97,6 +97,11 @@ export const lectureRouter = router({
           weekday: day,
         },
       },
+      orderBy: {
+        schedules: {
+          startTime: "asc"
+        }
+      }
     });
 
     return lectures.map((l) => {

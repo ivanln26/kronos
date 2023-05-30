@@ -61,7 +61,7 @@ export default function Admin() {
                             <button
                               className="bg-primary"
                               onClick={() => { setCurrent({ id: schedule.id.toString(), model: "schedule" }) }}>
-                              {schedule.startTime.toLocaleTimeString(undefined, timeOptions)} - {schedule.endTime.toLocaleTimeString(undefined, timeOptions)} | {schedule.course.name} {schedule.type[0].toUpperCase()}
+                              {schedule.startTime} - {schedule.endTime} | {schedule.course.name} {schedule.type[0].toUpperCase()}
                             </button>
                           </li>
                         ))}

@@ -5,7 +5,7 @@ import { procedure, router } from "../trpc";
 import { modalities, scheduleTypes, weekdays } from "../types";
 
 const formatting = new Intl.DateTimeFormat("es-AR", {
-  timeZone: "UTC",
+  timeZone: "America/Argentina/Cordoba",
   hour: "numeric",
   minute: "numeric",
 });
@@ -43,8 +43,8 @@ export const scheduleRouter = router({
     return schedules.map((schedule) => {
       return {
         id: schedule.id,
-        startTime: schedule.startTime,
-        endTime: schedule.endTime,
+        startTime: formatDate(schedule.startTime),
+        endTime: formatDate(schedule.endTime),
         course: schedule.course,
         type: schedule.type
       }
@@ -52,9 +52,23 @@ export const scheduleRouter = router({
   }),
 
   get: procedure.input(z.object({ id: z.string().regex(/[0-9]*/).transform((val) => BigInt(val)) })).query(async ({ input }) => {
-    return prisma.schedule.findFirst({
+    const schedule = await prisma.schedule.findFirst({
       where: { id: input.id }
     })
+
+    if (schedule === null) return null;
+
+    return {
+      id: schedule.id,
+      startTime: formatDate(schedule.startTime),
+      endTime: formatDate(schedule.endTime),
+      courseId: schedule.courseId,
+      classroomId: schedule.classroomId,
+      professorId: schedule.professorId,
+      type: schedule.type,
+      weekday: schedule.weekday,
+      modality: schedule.modality
+    }
   }),
 
   create: procedure.input(scheduleInput).mutation(async ({ input }) => {
@@ -89,9 +103,9 @@ export const scheduleRouter = router({
     return result;
   }),
 
-  delete: procedure.input(z.object({ id: z.string().regex(/[0-9]*/).transform((val) => BigInt(val)) })).mutation(async ({input}) => {
+  delete: procedure.input(z.object({ id: z.string().regex(/[0-9]*/).transform((val) => BigInt(val)) })).mutation(async ({ input }) => {
     const result = await prisma.schedule.delete({
-      where:{
+      where: {
         id: input.id
       }
     })
