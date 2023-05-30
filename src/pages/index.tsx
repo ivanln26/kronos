@@ -14,6 +14,7 @@ type Day = {
 };
 
 const Home: NextPage = () => {
+  const weekDays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
   const days: Day[] = [
     { id: "monday", name: "L" },
     { id: "tuesday", name: "M" },
@@ -22,7 +23,7 @@ const Home: NextPage = () => {
     { id: "friday", name: "V" },
   ];
 
-  const [currentDay, setCurrentDay] = useState<Weekday>("monday");
+  const [currentDay, setCurrentDay] = useState<Weekday>(weekDays[new Date().getDay()] as Weekday);
 
   const lectures = trpc.lecture.getByDay.useQuery({ day: currentDay });
 
