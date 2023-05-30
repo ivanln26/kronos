@@ -37,7 +37,7 @@ export default function Admin() {
 
   return (
     <>
-      {session && new Date(session?.expires) > new Date() && session.user.role !== "admin" ?
+      {session && new Date(session?.expires) > new Date() && session.user.role === "admin" ?
         <>
           <Navbar />
           <main className="flex flex-col md:flex-row ">
