@@ -39,6 +39,21 @@ const Week = ({ days, activeDay, setDays }: WeekProps) => {
     }
   }, []);
 
+  const translateWeekday = (weekday: Weekday) => {
+    switch (weekday) {
+      case "monday":
+        return "Lunes";
+      case "tuesday":
+        return "Martes";
+      case "wednesday":
+        return "Miercoles";
+      case "thursday":
+        return "Jueves";
+      case "friday":
+        return "Viernes";
+    }
+  }
+
   return (
     <div className={`p-2 ${robotoMono.className}`}>
       <div className="flex justify-between p-2 rounded-md font-bold select-none bg-primary-99 bg-gradient-to-r from-primary-40/[.05] to-primary-40/[.05] dark:bg-neutral-10 dark:from-primary-80/[.05] dark:to-primary-80/[.05]">
@@ -51,7 +66,7 @@ const Week = ({ days, activeDay, setDays }: WeekProps) => {
               onClick={() => setDays(id)}
               value={id}
             >
-              {windowSize.width <= 500 ? name : id}
+              {windowSize.width <= 500 ? name : translateWeekday(id)}
             </Button>
           </>
         ))}
