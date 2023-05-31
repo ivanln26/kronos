@@ -2,7 +2,8 @@ import { ZodDate, z } from "zod";
 
 import { prisma } from "../db";
 import { procedure, router } from "../trpc";
-import { weekdays } from "../types";
+import { lectureState, weekdays } from "../types";
+import type { LectureState } from "../types";
 
 const formatting = new Intl.DateTimeFormat("es-AR", {
   timeZone: "America/Argentina/Cordoba",
@@ -12,6 +13,19 @@ const formatting = new Intl.DateTimeFormat("es-AR", {
 
 function formatDate(date: Date) {
   return formatting.format(date);
+}
+
+function mapState(state: LectureState): string {
+  switch (state) {
+    case "scheduled":
+      return "Programada";
+    case "ongoing":
+      return "En Curso";
+    case "cancelled":
+      return "Cancelada";
+    case "delayed":
+      return "Atrasada";
+  }
 }
 
 const lectureInput = z.object({
@@ -54,7 +68,7 @@ export const lectureRouter = router({
       teacher:
         `${lecture.schedules.user.lastName.toUpperCase()}, ${lecture.schedules.user.name}`,
       course: lecture.schedules.course.name,
-      state: lecture.state,
+      state: mapState(lecture.state),
       date: lecture.date,
       startDate: formatDate(lecture.schedules.startTime),
       endDate: formatDate(lecture.schedules.endTime),
@@ -111,10 +125,19 @@ export const lectureRouter = router({
         teacher:
           `${l.schedules.user.lastName.toUpperCase()}, ${l.schedules.user.name}`,
         course: l.schedules.course.name,
-        state: l.state,
+        state: mapState(l.state),
         startDate: formatDate(l.schedules.startTime),
         endDate: formatDate(l.schedules.endTime),
       };
+    });
+  }),
+  updateState: procedure.input(z.object({
+    id: z.string().regex(/[0-9]*/).transform((val) => Number(val)),
+    state: lectureState,
+  })).mutation(async ({ input }) => {
+    await prisma.lecture.update({
+      where: { id: input.id },
+      data: { state: input.state },
     });
   }),
   create: procedure.input(lectureInput).mutation(async ({ input }) => {
@@ -145,5 +168,4 @@ export const lectureRouter = router({
       where:{id: input.id}
     })
   })
-
 });

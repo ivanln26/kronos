@@ -28,6 +28,16 @@ export const weekdays = z.enum([
 
 export type Weekday = z.infer<typeof weekdays>;
 
+
+export const lectureState = z.enum([
+  "scheduled",
+  "ongoing",
+  "cancelled",
+  "delayed",
+]);
+
+export type LectureState = z.infer<typeof lectureState>;
+
 export const modalities = z.enum([
   "f2f",
   "virtual",
