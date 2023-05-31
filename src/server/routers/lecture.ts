@@ -30,7 +30,7 @@ function mapState(state: LectureState): string {
 
 const lectureInput = z.object({
   scheduleId: z.string().regex(/[0-9]*/).transform((val) => BigInt(val)),
-  state: z.enum(['scheduled', 'ongoing', 'canceled', 'delayed']),
+  state: z.enum(['scheduled', 'ongoing', 'cancelled', 'delayed']),
   date: z.string(),
 });
 

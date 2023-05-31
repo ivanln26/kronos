@@ -127,6 +127,6 @@ enum ScheduleType {
 enum LectureState {
   scheduled
   ongoing
-  canceled
+  cancelled
   delayed
 }

@@ -159,7 +159,7 @@ const LectureAdmin = ({ id, setTriggerRefetch }: LectureAdminProps) => {
                 <AdminLectureSelect name="estado" formKey="state" value={formData.state} updateForm={updateForm}>
                     <option value="scheduled">Apuntada</option>
                     <option value="ongoing">En curso</option>
-                    <option value="canceled">Cancelada</option>
+                    <option value="cancelled">Cancelada</option>
                     <option value="delayed">Demorada</option>
                 </AdminLectureSelect>
                 <div className="flex flex-col justify-items-center mx-6 my-4">
