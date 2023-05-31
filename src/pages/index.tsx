@@ -37,7 +37,7 @@ const Home: NextPage = () => {
       <Week days={days} activeDay={currentDay} setDays={updateCurrent} />
       <div className="flex justify-center px-2">
         <div className="flex flex-col basis-full gap-y-2">
-          {lectures.data &&
+          {lectures.data && lectures.data.length != 0 ?
             lectures.data.map((lecture, i) => (
               <Link
                 key={i}
@@ -48,7 +48,15 @@ const Home: NextPage = () => {
               >
                 <Card {...lecture} />
               </Link>
-            ))}
+            ))
+            :
+            <>
+              <div className="flex h-screen flex-col justify-center">
+                <div className="flex flex-row justify-center">
+                  <h1 className="bg-blue-400 py-3 px-5 rounded">¡Felicidades, hoy no hay clases 🎉!</h1>
+                </div>
+              </div>
+            </>}
         </div>
       </div>
     </>

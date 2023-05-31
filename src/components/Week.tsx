@@ -23,7 +23,6 @@ const robotoMono = Roboto_Mono({
 
 const Week = ({ days, activeDay, setDays }: WeekProps) => {
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
-  console.log(windowSize)
   useEffect(() => {
     function handleResize() {
       setWindowSize({ width: window.innerWidth, height: window.innerHeight });
