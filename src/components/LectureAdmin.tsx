@@ -72,7 +72,6 @@ const LectureAdmin = ({ id, setTriggerRefetch }: LectureAdminProps) => {
 
     const handleModal = (e: any) => {
         e.preventDefault();
-        console.log(e.type)
         if (e.type === "submit") { // boton 'crear' o 'actualizar'
             setModalContent(
                 <>
@@ -101,7 +100,8 @@ const LectureAdmin = ({ id, setTriggerRefetch }: LectureAdminProps) => {
     }
 
     const handleSubmit = async (e: any) => {
-        const data = formData as any;
+        const data = {...formData} as any;
+        data["state"] = mapState(data["state"])
         let flag = false;
 
         Object.values(formData).forEach(value => {
@@ -120,8 +120,7 @@ const LectureAdmin = ({ id, setTriggerRefetch }: LectureAdminProps) => {
         }
         if (formData.id === "") {
             const res = await create.mutate(data);
-            console.log(res)
-            console.log("hola; ", update)
+            
         } else {
             const res = await update.mutate(data); // res es undefined?
         }
@@ -144,6 +143,19 @@ const LectureAdmin = ({ id, setTriggerRefetch }: LectureAdminProps) => {
         });
     };
 
+    function mapState(state: string): string | undefined {
+        switch (state) {
+          case "Programada":
+            return "scheduled";
+          case "En Curso":
+            return "ongoing";
+          case "Cancelada":
+            return "cancelled";
+          case "Atrasada":
+            return "delayed";
+        }
+      }
+
     return (
         <div>
             <Modal isOpen={modalIsOpen} setModal={setModal} >
@@ -157,10 +169,10 @@ const LectureAdmin = ({ id, setTriggerRefetch }: LectureAdminProps) => {
                     }
                 </AdminLectureSelect>
                 <AdminLectureSelect name="estado" formKey="state" value={formData.state} updateForm={updateForm}>
-                    <option value="scheduled">Apuntada</option>
-                    <option value="ongoing">En curso</option>
-                    <option value="canceled">Cancelada</option>
-                    <option value="delayed">Demorada</option>
+                    <option value="Programada">Programada</option>
+                    <option value="En curso">En curso</option>
+                    <option value="Cancelada">Cancelada</option>
+                    <option value="Atrasada">Atrasada</option>
                 </AdminLectureSelect>
                 <div className="flex flex-col justify-items-center mx-6 my-4">
                     <label className="mr-2 block mx-5">Selecciona una fecha:</label>
