@@ -1,4 +1,4 @@
-import { ZodDate, z } from "zod";
+import { z, ZodDate } from "zod";
 
 import { prisma } from "../db";
 import { procedure, router } from "../trpc";
@@ -30,7 +30,7 @@ function mapState(state: LectureState): string {
 
 const lectureInput = z.object({
   scheduleId: z.string().regex(/[0-9]*/).transform((val) => BigInt(val)),
-  state: z.enum(['scheduled', 'ongoing', 'cancelled', 'delayed']),
+  state: z.enum(["scheduled", "ongoing", "cancelled", "delayed"]),
   date: z.string(),
 });
 
@@ -76,13 +76,13 @@ export const lectureRouter = router({
   }),
   getAll: procedure.query(async () => {
     const lectures = await prisma.lecture.findMany({
-      include:{
+      include: {
         schedules: {
           include: {
-            course: true
-          }
-        }
-      }
+            course: true,
+          },
+        },
+      },
     });
     return lectures.map((lecture) => {
       return {
@@ -113,9 +113,9 @@ export const lectureRouter = router({
       },
       orderBy: {
         schedules: {
-          startTime: "asc"
-        }
-      }
+          startTime: "asc",
+        },
+      },
     });
 
     return lectures.map((l) => {
@@ -145,8 +145,8 @@ export const lectureRouter = router({
       data: {
         scheduleId: input.scheduleId,
         date: new Date(input.date),
-        state: input.state
-      }
+        state: input.state,
+      },
     });
     return result;
   }),
@@ -157,15 +157,19 @@ export const lectureRouter = router({
       data: {
         scheduleId: input.scheduleId,
         date: new Date(input.date),
-        state: input.state
-      }
+        state: input.state,
+      },
     });
     return result;
   }),
 
-  delete: procedure.input(z.object({ id: z.string().regex(/[0-9]*/).transform((val) => BigInt(val)) })).mutation(async ({input}) => {
+  delete: procedure.input(
+    z.object({
+      id: z.string().regex(/[0-9]*/).transform((val) => BigInt(val)),
+    }),
+  ).mutation(async ({ input }) => {
     const result = await prisma.lecture.delete({
-      where:{id: input.id}
-    })
-  })
+      where: { id: input.id },
+    });
+  }),
 });
