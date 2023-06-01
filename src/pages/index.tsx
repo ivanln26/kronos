@@ -23,13 +23,17 @@ const Home: NextPage = () => {
     { id: "friday", name: "V" },
   ];
 
-  const [currentDay, setCurrentDay] = useState<Weekday>(weekDays[new Date().getDay()] as Weekday);
+  const [currentDay, setCurrentDay] = useState<Weekday>("monday");
 
   const lectures = trpc.lecture.getByDay.useQuery({ day: currentDay });
 
   const updateCurrent = (weekday: Weekday) => {
     setCurrentDay(weekday);
   };
+
+  useEffect(() => {
+    setCurrentDay(weekDays[new Date().getDay()] as Weekday)
+  }, [])
 
   return (
     <>
