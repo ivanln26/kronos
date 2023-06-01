@@ -36,25 +36,29 @@ export const scheduleRouter = router({
     const schedules = await prisma.schedule.findMany(
       {
         include: {
-          course: true
-        }
-      }
-    )
+          course: true,
+        },
+      },
+    );
     return schedules.map((schedule) => {
       return {
         id: schedule.id,
         startTime: formatDate(schedule.startTime),
         endTime: formatDate(schedule.endTime),
         course: schedule.course,
-        type: schedule.type
-      }
+        type: schedule.type,
+      };
     });
   }),
 
-  get: procedure.input(z.object({ id: z.string().regex(/[0-9]*/).transform((val) => BigInt(val)) })).query(async ({ input }) => {
+  get: procedure.input(
+    z.object({
+      id: z.string().regex(/[0-9]*/).transform((val) => BigInt(val)),
+    }),
+  ).query(async ({ input }) => {
     const schedule = await prisma.schedule.findFirst({
-      where: { id: input.id }
-    })
+      where: { id: input.id },
+    });
 
     if (schedule === null) return null;
 
@@ -67,8 +71,8 @@ export const scheduleRouter = router({
       professorId: schedule.professorId,
       type: schedule.type,
       weekday: schedule.weekday,
-      modality: schedule.modality
-    }
+      modality: schedule.modality,
+    };
   }),
 
   create: procedure.input(scheduleInput).mutation(async ({ input }) => {
@@ -103,12 +107,16 @@ export const scheduleRouter = router({
     return result;
   }),
 
-  delete: procedure.input(z.object({ id: z.string().regex(/[0-9]*/).transform((val) => BigInt(val)) })).mutation(async ({ input }) => {
+  delete: procedure.input(
+    z.object({
+      id: z.string().regex(/[0-9]*/).transform((val) => BigInt(val)),
+    }),
+  ).mutation(async ({ input }) => {
     const result = await prisma.schedule.delete({
       where: {
-        id: input.id
-      }
-    })
+        id: input.id,
+      },
+    });
     return result;
-  })
+  }),
 });
