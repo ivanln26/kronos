@@ -46,7 +46,7 @@ const Week = ({ days, activeDay, setDays }: WeekProps) => {
       case "tuesday":
         return "Martes";
       case "wednesday":
-        return "Miercoles";
+        return "Miércoles";
       case "thursday":
         return "Jueves";
       case "friday":
