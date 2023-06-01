@@ -1,5 +1,5 @@
 import type { NextPage } from "next";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 
 import Card from "@/components/Card";
@@ -14,6 +14,10 @@ type Day = {
   abbreviation: string;
 };
 
+function clampNumber(n: number, a: number, b: number): number {
+  return Math.max(Math.min(n, Math.max(a, b)), Math.min(a, b));
+}
+
 const Home: NextPage = () => {
   const days: Day[] = [
     { id: "monday", name: "Lunes", abbreviation: "L" },
@@ -23,7 +27,11 @@ const Home: NextPage = () => {
     { id: "friday", name: "Viernes", abbreviation: "V" },
   ];
 
-  const [currentDay, setCurrentDay] = useState<Weekday>("monday");
+  const [currentDay, setCurrentDay] = useState<Weekday>(() => {
+    const date = new Date();
+    const day_of_week = clampNumber(date.getDay(), 1, 5);
+    return days[day_of_week - 1].id;
+  });
 
   const lectures = trpc.lecture.getByDay.useQuery({ day: currentDay });
 
