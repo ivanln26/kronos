@@ -49,7 +49,7 @@ const LectureAdmin = ({ id, setTriggerRefetch }: LectureAdminProps) => {
             })
         }
     }, [id, lecture]);
-
+    
     const [formData, setFormData] = useState<StringLecture>({
         id: "",
         scheduleId: "",
@@ -170,7 +170,7 @@ const LectureAdmin = ({ id, setTriggerRefetch }: LectureAdminProps) => {
                 </AdminLectureSelect>
                 <AdminLectureSelect name="estado" formKey="state" value={formData.state} updateForm={updateForm}>
                     <option value="Programada">Programada</option>
-                    <option value="En curso">En curso</option>
+                    <option value="En Curso">En curso</option>
                     <option value="Cancelada">Cancelada</option>
                     <option value="Atrasada">Atrasada</option>
                 </AdminLectureSelect>

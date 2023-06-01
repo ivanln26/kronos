@@ -28,7 +28,6 @@ const Card: NextPage<Props> = (
   const setStateColor = (state: string) => {
     for (let s in stateColors){
       if (s === state){
-        console.log(Object.values(stateColors)[Object.keys(stateColors).indexOf(s)])
         return Object.values(stateColors)[Object.keys(stateColors).indexOf(s)]
       }
     }

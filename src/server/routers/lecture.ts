@@ -67,6 +67,7 @@ export const lectureRouter = router({
       classroom: lecture.schedules.classroom.name,
       teacher:
         `${lecture.schedules.user.lastName.toUpperCase()}, ${lecture.schedules.user.name}`,
+      teacherId: lecture.schedules.user.id,
       course: lecture.schedules.course.name,
       state: mapState(lecture.state),
       date: lecture.date,
