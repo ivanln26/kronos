@@ -3,6 +3,7 @@ import { useState } from "react";
 import Link from "next/link";
 
 import Card from "@/components/Card";
+import CardSkeleton from "@/components/CardSkeleton";
 import Navbar from "@/components/Navbar";
 import Week from "@/components/Week";
 import { trpc } from "@/utils/trpc";
@@ -43,32 +44,30 @@ const Home: NextPage = () => {
     <>
       <Navbar />
       <Week days={days} activeDay={currentDay} setDays={updateCurrent} />
-      <div className="flex justify-center px-2">
-        <div className="flex flex-col basis-full gap-y-2">
-          {lectures.data && lectures.data.length != 0
-            ? lectures.data.map((lecture, i) => (
-              <Link
-                key={i}
-                href={{
-                  pathname: "/lecture/[id]",
-                  query: { id: Number(lecture.id) },
-                }}
-              >
-                <Card {...lecture} />
-              </Link>
-            ))
-            : (
-              <>
-                <div className="flex h-screen flex-col justify-center">
-                  <div className="flex flex-row justify-center">
-                    <h1 className="bg-blue-400 py-3 px-5 rounded">
-                      ¡Felicidades, hoy no hay clases 🎉!
-                    </h1>
-                  </div>
-                </div>
-              </>
-            )}
-        </div>
+      <div className="px-2 flex flex-col gap-y-2">
+        {lectures.status == "loading"
+          ? Array(6).fill(null).map((_, i) => <CardSkeleton key={i} />)
+          : lectures.status == "success" && lectures.data.length != 0
+          ? lectures.data.map((lecture, i) => (
+            <Link
+              key={i}
+              href={{
+                pathname: "/lecture/[id]",
+                query: { id: Number(lecture.id) },
+              }}
+            >
+              <Card {...lecture} />
+            </Link>
+          ))
+          : (
+            <div className="flex justify-center mt-2">
+              <div className="py-3 px-5 rounded-xl text-white bg-primary-40 dark:text-primary-20 dark:bg-primary-80">
+                <h1 className="font-bold text-base md:text-2xl">
+                  ¡Felicidades, hoy no hay clases &#x1F389;!
+                </h1>
+              </div>
+            </div>
+          )}
       </div>
     </>
   );
