@@ -60,10 +60,10 @@ const Home: NextPage = () => {
             </Link>
           ))
           : (
-            <div className="flex flex-col justify-center">
-              <div className="flex flex-row justify-center">
-                <h1 className="bg-blue-400 py-3 px-5 rounded">
-                  ¡Felicidades, hoy no hay clases 🎉!
+            <div className="flex justify-center mt-2">
+              <div className="py-3 px-5 rounded-xl text-white bg-primary-40 dark:text-primary-20 dark:bg-primary-80">
+                <h1 className="font-bold text-base md:text-2xl">
+                  ¡Felicidades, hoy no hay clases &#x1F389;!
                 </h1>
               </div>
             </div>
