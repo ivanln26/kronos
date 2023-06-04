@@ -38,8 +38,6 @@ export default function Admin() {
     setTriggerRefetch(false);
   }, [triggerRefetch]);
 
-  console.log();
-
   return (
     <>
       {session && new Date(session?.expires) > new Date() &&
