@@ -1,4 +1,4 @@
-import { ZodDate, z } from "zod";
+import { z } from "zod";
 
 import { prisma } from "../db";
 import { procedure, router } from "../trpc";
@@ -15,22 +15,22 @@ function formatDate(date: Date) {
   return formatting.format(date);
 }
 
-function mapState(state: LectureState): string {
+function mapState(state: LectureState): { state: string; color: string } {
   switch (state) {
     case "scheduled":
-      return "Programada";
+      return { state: "Programada", color: "border-blue-600" };
     case "ongoing":
-      return "En Curso";
+      return { state: "En Curso", color: "border-green-600" };
     case "cancelled":
-      return "Cancelada";
+      return { state: "Cancelada", color: "border-red-600" };
     case "delayed":
-      return "Atrasada";
+      return { state: "Atrasada", color: "border-yellow-600" };
   }
 }
 
 const lectureInput = z.object({
   scheduleId: z.string().regex(/[0-9]*/).transform((val) => BigInt(val)),
-  state: z.enum(['scheduled', 'ongoing', 'cancelled', 'delayed']),
+  state: z.enum(["scheduled", "ongoing", "cancelled", "delayed"]),
   date: z.string(),
 });
 
@@ -69,21 +69,21 @@ export const lectureRouter = router({
         `${lecture.schedules.user.lastName.toUpperCase()}, ${lecture.schedules.user.name}`,
       teacherId: lecture.schedules.user.id,
       course: lecture.schedules.course.name,
-      state: mapState(lecture.state),
       date: lecture.date,
       startDate: formatDate(lecture.schedules.startTime),
       endDate: formatDate(lecture.schedules.endTime),
+      ...mapState(lecture.state),
     };
   }),
   getAll: procedure.query(async () => {
     const lectures = await prisma.lecture.findMany({
-      include:{
+      include: {
         schedules: {
           include: {
-            course: true
-          }
-        }
-      }
+            course: true,
+          },
+        },
+      },
     });
     return lectures.map((lecture) => {
       return {
@@ -114,10 +114,12 @@ export const lectureRouter = router({
       },
       orderBy: {
         schedules: {
-          startTime: "asc"
-        }
-      }
+          startTime: "asc",
+        },
+      },
     });
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     return lectures.map((l) => {
       return {
@@ -126,9 +128,9 @@ export const lectureRouter = router({
         teacher:
           `${l.schedules.user.lastName.toUpperCase()}, ${l.schedules.user.name}`,
         course: l.schedules.course.name,
-        state: mapState(l.state),
         startDate: formatDate(l.schedules.startTime),
         endDate: formatDate(l.schedules.endTime),
+        ...mapState(l.state),
       };
     });
   }),
@@ -146,8 +148,8 @@ export const lectureRouter = router({
       data: {
         scheduleId: input.scheduleId,
         date: new Date(input.date),
-        state: input.state
-      }
+        state: input.state,
+      },
     });
     return result;
   }),
@@ -158,15 +160,19 @@ export const lectureRouter = router({
       data: {
         scheduleId: input.scheduleId,
         date: new Date(input.date),
-        state: input.state
-      }
+        state: input.state,
+      },
     });
     return result;
   }),
 
-  delete: procedure.input(z.object({ id: z.string().regex(/[0-9]*/).transform((val) => BigInt(val)) })).mutation(async ({input}) => {
+  delete: procedure.input(
+    z.object({
+      id: z.string().regex(/[0-9]*/).transform((val) => BigInt(val)),
+    }),
+  ).mutation(async ({ input }) => {
     const result = await prisma.lecture.delete({
-      where:{id: input.id}
-    })
-  })
+      where: { id: input.id },
+    });
+  }),
 });

@@ -1,10 +1,10 @@
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 
-import Image from 'next/image';
+import Image from "next/image";
 import Link from "next/link";
 
-import myIcon from 'public/back_arrow.svg'
+import myIcon from "public/back_arrow.svg";
 
 import Navbar from "@/components/Navbar";
 import Spinner from "@/components/Spinner";
@@ -15,7 +15,7 @@ import { useEffect, useState } from "react";
 
 type LectureDetailProps = {};
 
-const LectureDetail: NextPage<LectureDetailProps> = ({ }) => {
+const LectureDetail: NextPage<LectureDetailProps> = ({}) => {
   const { query } = useRouter();
   const id = query.id as string;
 

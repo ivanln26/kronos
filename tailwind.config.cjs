@@ -5,6 +5,9 @@ module.exports = {
   darkMode: "class",
   theme: {
     extend: {
+      fontFamily: {
+        mono: ["var(--font-roboto-mono)"],
+      },
       colors: {
         primary: {
           0: "#000000",
