@@ -245,7 +245,7 @@ const LectureAdmin = ({ id, setTriggerRefetch }: LectureAdminProps) => {
           updateForm={updateForm}
         >
           <option value="Programada">Programada</option>
-          <option value="En curso">En curso</option>
+          <option value="En Curso">En curso</option>
           <option value="Cancelada">Cancelada</option>
           <option value="Atrasada">Atrasada</option>
         </AdminLectureSelect>
