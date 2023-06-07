@@ -221,7 +221,7 @@ const LectureAdmin = ({ id, setTriggerRefetch }: LectureAdminProps) => {
       </Modal>
       <form onSubmit={handleModal} className="flex flex-col">
         <AdminLectureSelect
-          name="schedule"
+          name="Horario"
           formKey="scheduleId"
           value={formData.scheduleId}
           updateForm={updateForm}
