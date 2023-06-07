@@ -1,35 +1,22 @@
 import { useEffect, useState } from "react";
+import { signIn, useSession } from "next-auth/react";
 
-import { type Session } from "next-auth";
-import { signIn, signOut, useSession } from "next-auth/react";
-
+import Button from "@/components/Button";
 import Navbar from "@/components/Navbar";
 import ScheduleAdmin from "@/components/ScheduleAdmin";
-
-import { trpc } from "@/utils/trpc";
 import LectureAdmin from "@/components/LectureAdmin";
+import { trpc } from "@/utils/trpc";
 
-const timeOptions: Intl.DateTimeFormatOptions = {
-  hour: "2-digit",
-  minute: "2-digit",
-  second: undefined,
-  hour12: false,
-};
+type ItemId = "lecture" | "schedule";
 
 export default function Admin() {
   const { data: session } = useSession();
 
-  type currentType = {
-    id: string;
-    model: string;
-  };
   const schedules = trpc.schedules.getAll.useQuery();
   const lectures = trpc.lecture.getAll.useQuery();
 
-  const [sideBar, setSideBar] = useState<[boolean, boolean]>([false, false]);
-
-  const [current, setCurrent] = useState<currentType>({ id: "", model: "" });
-
+  const [current, setCurrent] = useState<ItemId>("schedule");
+  const [id, setId] = useState<string>("");
   const [triggerRefetch, setTriggerRefetch] = useState<boolean>(false);
 
   useEffect(() => {
@@ -40,143 +27,102 @@ export default function Admin() {
 
   return (
     <>
-      {session && new Date(session?.expires) > new Date() &&
-          session.user.role === "admin"
+      {session && session.user.role === "admin"
         ? (
           <>
             <Navbar />
-            <main className="flex flex-col md:flex-row ">
-              <section className="flex-none md:h-screen my-5 md:w-80 mx-5 md:mx-2 text-center rounded-xl font-black
-                bg-primary-99 bg-gradient-to-r from-primary-40/[.05] to-primary-40/[.05] dark:bg-neutral-10 dark:from-primary-80/[.05] dark:to-primary-80/[.05]">
-                <ul>
-                  <li
-                    onClick={() => {
-                      setSideBar([!sideBar[0], sideBar[1]]);
-                    }}
-                  >
-                    Horarios
+            <main className="flex flex-col md:flex-row">
+              <section className="px-2 py-1 md:basis-1/4">
+                <ul className="flex flex-col items-center px-2 py-4 gap-y-2 rounded-xl bg-primary-99 bg-gradient-to-r from-primary-40/[.05] to-primary-40/[.05] dark:bg-neutral-10 dark:from-primary-80/[.05] dark:to-primary-80/[.05]">
+                  <li className="flex gap-x-2">
+                    <Button
+                      onClick={() => setCurrent("schedule")}
+                      size="medium"
+                    >
+                      Horarios
+                    </Button>
+                    <button
+                      className="w-8 font-bold rounded bg-green-500 text-white dark:bg-green-300 dark:text-green-900"
+                      onClick={() => {
+                        setCurrent("schedule");
+                        setId("");
+                      }}
+                    >
+                      +
+                    </button>
                   </li>
-                  <hr className="mx-4" />
-                  {sideBar[0] &&
-                    (
-                      <>
-                        <ul>
-                          <li>
-                            <button
-                              className="bg-primary"
-                              onClick={() => {
-                                setCurrent({ id: "", model: "schedule" });
-                              }}
-                            >
-                              --- Nuevo horario ---
-                            </button>
-                          </li>
-                          {schedules.data &&
-                            schedules.data.map((schedule, i) => (
-                              <li key={Number(schedule.id)}>
-                                <button
-                                  className="bg-primary"
-                                  onClick={() => {
-                                    setCurrent({
-                                      id: schedule.id.toString(),
-                                      model: "schedule",
-                                    });
-                                  }}
-                                >
-                                  {schedule.startTime} - {schedule.endTime} |
-                                  {" "}
-                                  {schedule.course.name}{" "}
-                                  {schedule.type[0].toUpperCase()}
-                                </button>
-                              </li>
-                            ))}
-                        </ul>
-                      </>
-                    )}
-                  <li
-                    onClick={() => {
-                      setSideBar([sideBar[0], !sideBar[1]]);
-                    }}
-                  >
-                    Lecciones
+                  {current === "schedule" && schedules.data &&
+                    schedules.data.map((schedule) => (
+                      <li key={Number(schedule.id)}>
+                        <button
+                          onClick={() =>
+                            setId(schedule.id.toString())}
+                        >
+                          {schedule.startTime} - {schedule.endTime} |{" "}
+                          {schedule.course.name}{" "}
+                          {schedule.type[0].toUpperCase()}
+                        </button>
+                      </li>
+                    ))}
+                  <hr className="w-full h-px my-1 border-0 bg-neutral-950 dark:bg-neutral-600" />
+                  <li className="flex gap-x-2">
+                    <Button onClick={() => setCurrent("lecture")} size="medium">
+                      Lecciones
+                    </Button>
+                    <button
+                      className="w-8 font-bold rounded bg-green-500 text-white dark:bg-green-300 dark:text-green-900"
+                      onClick={() => {
+                        setCurrent("lecture");
+                        setId("");
+                      }}
+                    >
+                      +
+                    </button>
                   </li>
-                  {sideBar[1] &&
-                    (
-                      <>
-                        <hr className="mx-4" />
-                        <ul>
-                          <li>
-                            <button
-                              className="bg-primary"
-                              onClick={() => {
-                                setCurrent({ id: "", model: "lecture" });
-                              }}
-                            >
-                              --- Nueva lección ---
-                            </button>
-                          </li>
-                          {lectures.data &&
-                            lectures.data.map((lecture, i) => (
-                              <li key={Number(lecture.id)}>
-                                <button
-                                  className="bg-primary"
-                                  onClick={() => {
-                                    setCurrent({
-                                      id: lecture.id.toString(),
-                                      model: "lecture",
-                                    });
-                                  }}
-                                >
-                                  {lecture.schedule.course.name}{" "}
-                                  {lecture.schedule.type[0].toUpperCase()} -
-                                  {" "}
-                                  {lecture.date.toISOString().split("T")[0]}
-                                </button>
-                              </li>
-                            ))}
-                        </ul>
-                      </>
-                    )}
+                  {current === "lecture" && lectures.data &&
+                    lectures.data.map((lecture) => (
+                      <li key={Number(lecture.id)}>
+                        <button onClick={() => setId(lecture.id.toString())}>
+                          {lecture.schedule.course.name}{" "}
+                          {lecture.schedule.type[0].toUpperCase()} -{" "}
+                          {lecture.date.toISOString().split("T")[0]}
+                        </button>
+                      </li>
+                    ))}
                 </ul>
               </section>
-              <section className="h-full flex flex-col md:w-screen bg-gray-500 mx-5 md:mx-2 my-5 rounded-xl
-                    bg-primary-99 bg-gradient-to-r from-primary-40/[.05] to-primary-40/[.05] dark:bg-neutral-10 dark:from-primary-80/[.05] dark:to-primary-80/[.05]">
-                {current.model === "schedule" && (
-                  <ScheduleAdmin
-                    id={current.id}
-                    setTriggerRefetch={setTriggerRefetch}
-                  />
-                )}
-                {current.model === "lecture" && (
-                  <LectureAdmin
-                    id={current.id}
-                    setTriggerRefetch={setTriggerRefetch}
-                  />
-                )}
+              <section className="px-2 py-1 grow">
+                <div className="flex flex-col px-2 py-4 rounded-xl bg-primary-99 bg-gradient-to-r from-primary-40/[.05] to-primary-40/[.05] dark:bg-neutral-10 dark:from-primary-80/[.05] dark:to-primary-80/[.05]">
+                  {current === "schedule" && (
+                    <ScheduleAdmin
+                      id={id}
+                      setTriggerRefetch={setTriggerRefetch}
+                    />
+                  )}
+                  {current === "lecture" && (
+                    <LectureAdmin
+                      id={id}
+                      setTriggerRefetch={setTriggerRefetch}
+                    />
+                  )}
+                </div>
               </section>
             </main>
           </>
         )
         : (
-          <>
-            <div className="flex flex-col w-screen justify-center text-center gap-10 h-screen align-items-center">
-              <h1 className="font-bold">Error</h1>
-              <h2>
-                No has iniciado sesión, asegurate de tener permisos de
-                administrador.
-              </h2>
-              <div>
-                <button
-                  className="bg-blue-300 px-5 rounded py-2"
-                  onClick={() => {
-                    signIn();
-                  }}
-                >
-                  login
-                </button>
-              </div>
+          <div className="flex flex-col justify-center gap-y-10 h-screen text-center">
+            <h1 className="font-bold">Error</h1>
+            <h2>
+              No has iniciado sesión, asegurate de tener permisos de
+              administrador.
+            </h2>
+            <div>
+              <Button onClick={() => signIn()} size="medium">
+                Iniciar Sesión
+              </Button>
             </div>
-          </>
+          </div>
         )}
     </>
   );
