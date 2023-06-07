@@ -23,15 +23,17 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       if (size == "large") {
         cls +=
           " md:px-4 lg:px-5 md:py-2 lg:py-3 md:text-2xl lg:text-4xl lg:rounded-xl";
+      } else if (size == "medium") {
+        cls += " md:px-4 md:py-1 md:text-lg";
       }
       return cls;
     };
 
     return (
       <button
-        className={className()}
-        ref={ref}
         {...props}
+        className={`${className()} ${props.className}`}
+        ref={ref}
       >
         {children}
       </button>
