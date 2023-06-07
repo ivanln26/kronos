@@ -16,12 +16,14 @@ const Navbar = () => {
       >
         kronos
       </Link>
-      {status === "unauthenticated"
-        ? <Button onClick={() => signIn()}>Iniciar Sesión</Button>
+      {status === "loading"
+        ? <Button className="w-48 animate-pulse" size="medium">...</Button>
+        : status === "unauthenticated" || session === null
+        ? <Button onClick={() => signIn()} size="medium">Iniciar Sesión</Button>
         : (
           <div>
             <Button onClick={() => setIsOpen((prev) => !prev)} size="medium">
-              {session?.user.name}
+              {session.user.name}
             </Button>
             <ul
               className={`${
@@ -31,7 +33,7 @@ const Navbar = () => {
               <li>
                 <Link href="/" className="block px-1 py-2">Horarios</Link>
               </li>
-              {session?.user.role === "admin" && (
+              {session.user.role === "admin" && (
                 <>
                   <li>
                     <Link href="/admin" className="block px-1 py-2">

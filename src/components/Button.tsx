@@ -31,9 +31,9 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     return (
       <button
-        className={className()}
-        ref={ref}
         {...props}
+        className={`${className()} ${props.className}`}
+        ref={ref}
       >
         {children}
       </button>
