@@ -9,17 +9,9 @@ import Modal from "./Modal";
 
 type ScheduleAdminProps = {
   id: string;
-  setTriggerRefetch: Function;
 };
 
-const timeOptions: Intl.DateTimeFormatOptions = {
-  hour: "2-digit",
-  minute: "2-digit",
-  second: undefined,
-  hour12: false,
-};
-
-const ScheduleAdmin = ({ id, setTriggerRefetch }: ScheduleAdminProps) => {
+const ScheduleAdmin = ({ id }: ScheduleAdminProps) => {
   type StringSchedule = {
     [k in keyof Schedule]: string;
   };
@@ -29,9 +21,25 @@ const ScheduleAdmin = ({ id, setTriggerRefetch }: ScheduleAdminProps) => {
 
   const schedule = trpc.schedules.get.useQuery({ id: id.toString() }).data;
 
-  const create = trpc.schedules.create.useMutation();
-  const update = trpc.schedules.update.useMutation();
-  const remove = trpc.schedules.delete.useMutation();
+  const ctx = trpc.useContext();
+  const create = trpc.schedules.create.useMutation({
+    onSuccess: () => {
+      ctx.schedules.getAll.invalidate();
+      ctx.lecture.getAll.invalidate();
+    },
+  });
+  const update = trpc.schedules.update.useMutation({
+    onSuccess: () => {
+      ctx.schedules.getAll.invalidate();
+      ctx.lecture.getAll.invalidate();
+    },
+  });
+  const remove = trpc.schedules.delete.useMutation({
+    onSuccess: () => {
+      ctx.schedules.getAll.invalidate();
+      ctx.lecture.getAll.invalidate();
+    },
+  });
 
   useEffect(() => {
     if (id === "") {
@@ -98,7 +106,6 @@ const ScheduleAdmin = ({ id, setTriggerRefetch }: ScheduleAdminProps) => {
         </button>
       </div>,
     );
-    setTriggerRefetch(true);
   };
 
   const handleModal = (e: any) => {
@@ -186,7 +193,7 @@ const ScheduleAdmin = ({ id, setTriggerRefetch }: ScheduleAdminProps) => {
   };
 
   const checkTime = (time: string) => {
-    const timePattern = /^\d{2}\:\d{2}?$/i;
+    const timePattern = /^\d{2}(:\d{2})?$/i;
     return timePattern.test(time);
   };
 
@@ -210,7 +217,6 @@ const ScheduleAdmin = ({ id, setTriggerRefetch }: ScheduleAdminProps) => {
         </button>
       </div>,
     );
-    setTriggerRefetch(true);
   };
 
   const updateForm = <K extends keyof StringSchedule>(
@@ -303,19 +309,14 @@ const ScheduleAdmin = ({ id, setTriggerRefetch }: ScheduleAdminProps) => {
           formKey={"startTime"}
           value={formData.startTime}
           updateForm={updateForm}
-          pattern="\d{2}(\:\d{2})?"
         />
         <AdminInput
           name="Hora de fin"
           formKey="endTime"
           value={formData.endTime}
           updateForm={updateForm}
-          pattern="\d{2}(\:\d{2})?"
         />
-        <div
-          id=""
-          className="flex flex-row justify-center md:justify-end md:mr-10 gap-2"
-        >
+        <div className="flex flex-row justify-center md:justify-end md:mr-10 gap-2">
           {formData.id !== "" &&
             (
               <button

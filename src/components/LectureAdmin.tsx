@@ -8,17 +8,9 @@ import Modal from "./Modal";
 
 type LectureAdminProps = {
   id: string;
-  setTriggerRefetch: Function;
 };
 
-const timeOptions: Intl.DateTimeFormatOptions = {
-  hour: "2-digit",
-  minute: "2-digit",
-  second: undefined,
-  hour12: false,
-};
-
-const LectureAdmin = ({ id, setTriggerRefetch }: LectureAdminProps) => {
+const LectureAdmin = ({ id }: LectureAdminProps) => {
   type StringLecture = {
     [k in keyof Lecture]: string;
   };
@@ -28,9 +20,25 @@ const LectureAdmin = ({ id, setTriggerRefetch }: LectureAdminProps) => {
 
   const lecture = trpc.lecture.get.useQuery(id.toString()).data;
 
-  const create = trpc.lecture.create.useMutation();
-  const update = trpc.lecture.update.useMutation();
-  const remove = trpc.lecture.delete.useMutation();
+  const ctx = trpc.useContext();
+  const create = trpc.lecture.create.useMutation({
+    onSuccess: () => {
+      ctx.schedules.getAll.invalidate();
+      ctx.lecture.getAll.invalidate();
+    },
+  });
+  const update = trpc.lecture.update.useMutation({
+    onSuccess: () => {
+      ctx.schedules.getAll.invalidate();
+      ctx.lecture.getAll.invalidate();
+    },
+  });
+  const remove = trpc.lecture.delete.useMutation({
+    onSuccess: () => {
+      ctx.schedules.getAll.invalidate();
+      ctx.lecture.getAll.invalidate();
+    },
+  });
 
   useEffect(() => {
     if (id === "") {
@@ -80,7 +88,6 @@ const LectureAdmin = ({ id, setTriggerRefetch }: LectureAdminProps) => {
         </button>
       </div>,
     );
-    setTriggerRefetch(true);
   };
 
   const handleModal = (e: any) => {
@@ -187,9 +194,7 @@ const LectureAdmin = ({ id, setTriggerRefetch }: LectureAdminProps) => {
         </button>
       </div>,
     );
-    setTriggerRefetch(true);
   };
-
 
   const updateForm = <K extends keyof StringLecture>(
     key: K,
@@ -221,7 +226,7 @@ const LectureAdmin = ({ id, setTriggerRefetch }: LectureAdminProps) => {
       </Modal>
       <form onSubmit={handleModal} className="flex flex-col">
         <AdminLectureSelect
-          name="schedule"
+          name="Horario"
           formKey="scheduleId"
           value={formData.scheduleId}
           updateForm={updateForm}

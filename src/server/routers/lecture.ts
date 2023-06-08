@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { prisma } from "../db";
 import { procedure, router } from "../trpc";
-import { lectureState, weekdays } from "../types";
+import { lectureState, user, weekdays } from "../types";
 import type { LectureState } from "../types";
 
 const formatting = new Intl.DateTimeFormat("es-AR", {
@@ -69,6 +69,7 @@ export const lectureRouter = router({
         `${lecture.schedules.user.lastName.toUpperCase()}, ${lecture.schedules.user.name}`,
       teacherId: lecture.schedules.user.id,
       course: lecture.schedules.course.name,
+      courseId: lecture.schedules.course.id,
       date: lecture.date,
       startDate: formatDate(lecture.schedules.startTime),
       endDate: formatDate(lecture.schedules.endTime),
@@ -121,6 +122,57 @@ export const lectureRouter = router({
 
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
+    return lectures.map((l) => {
+      return {
+        id: l.id,
+        classroom: l.schedules.classroom.name,
+        teacher:
+          `${l.schedules.user.lastName.toUpperCase()}, ${l.schedules.user.name}`,
+        course: l.schedules.course.name,
+        startDate: formatDate(l.schedules.startTime),
+        endDate: formatDate(l.schedules.endTime),
+        ...mapState(l.state),
+      };
+    });
+  }),
+  getFavouritesByDay: procedure.input(z.object({
+    userId: z.number().int(),
+    day: weekdays,
+  })).query(async ({ input }) => {
+    const { day } = input;
+    const lectures = await prisma.lecture.findMany({
+      include: {
+        schedules: {
+          include: {
+            classroom: true,
+            user: true,
+            course: true,
+          },
+        },
+      },
+      where: {
+        schedules: {
+          weekday: day,
+          OR: [
+            {
+              course: {
+                enrollments: {
+                  some: { studentId: input.userId },
+                },
+              },
+            },
+            {
+              professorId: input.userId,
+            },
+          ],
+        },
+      },
+      orderBy: {
+        schedules: {
+          startTime: "asc",
+        },
+      },
+    });
     return lectures.map((l) => {
       return {
         id: l.id,
