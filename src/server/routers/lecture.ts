@@ -135,6 +135,50 @@ export const lectureRouter = router({
       };
     });
   }),
+  getFavouritesByDay: procedure.input(z.object({
+    userId: z.number().int(),
+    day: weekdays,
+  })).query(async ({ input }) => {
+    const { day } = input;
+    const lectures = await prisma.lecture.findMany({
+      include: {
+        schedules: {
+          include: {
+            classroom: true,
+            user: true,
+            course: true,
+          },
+        },
+      },
+      where: {
+        schedules: {
+          weekday: day,
+          course: {
+            enrollments: {
+              some: { studentId: input.userId },
+            },
+          },
+        },
+      },
+      orderBy: {
+        schedules: {
+          startTime: "asc",
+        },
+      },
+    });
+    return lectures.map((l) => {
+      return {
+        id: l.id,
+        classroom: l.schedules.classroom.name,
+        teacher:
+          `${l.schedules.user.lastName.toUpperCase()}, ${l.schedules.user.name}`,
+        course: l.schedules.course.name,
+        startDate: formatDate(l.schedules.startTime),
+        endDate: formatDate(l.schedules.endTime),
+        ...mapState(l.state),
+      };
+    });
+  }),
   updateState: procedure.input(z.object({
     id: z.string().regex(/[0-9]*/).transform((val) => Number(val)),
     state: lectureState,
