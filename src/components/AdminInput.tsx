@@ -12,11 +12,10 @@ interface AdminInputProps {
   formKey: keyof StringSchedule;
   value: string;
   name: string;
-  pattern: string;
 }
 
 export default function AdminInput(
-  { updateForm, formKey, value, name, pattern = "" }: AdminInputProps,
+  { updateForm, formKey, value, name }: AdminInputProps,
 ) {
   return (
     <div className="flex flex-col justify-items-center mx-6 my-4">
@@ -26,7 +25,6 @@ export default function AdminInput(
         className="text-black border rounded p-1 mx-5"
         onChange={(e) => updateForm(formKey, e.target.value)}
         value={value}
-        pattern={pattern}
         required
       />
     </div>

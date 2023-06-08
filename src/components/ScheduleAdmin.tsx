@@ -12,13 +12,6 @@ type ScheduleAdminProps = {
   setTriggerRefetch: Function;
 };
 
-const timeOptions: Intl.DateTimeFormatOptions = {
-  hour: "2-digit",
-  minute: "2-digit",
-  second: undefined,
-  hour12: false,
-};
-
 const ScheduleAdmin = ({ id, setTriggerRefetch }: ScheduleAdminProps) => {
   type StringSchedule = {
     [k in keyof Schedule]: string;
@@ -186,7 +179,7 @@ const ScheduleAdmin = ({ id, setTriggerRefetch }: ScheduleAdminProps) => {
   };
 
   const checkTime = (time: string) => {
-    const timePattern = /^\d{2}\:\d{2}?$/i;
+    const timePattern = /^\d{2}(:\d{2})?$/i;
     return timePattern.test(time);
   };
 
@@ -303,19 +296,14 @@ const ScheduleAdmin = ({ id, setTriggerRefetch }: ScheduleAdminProps) => {
           formKey={"startTime"}
           value={formData.startTime}
           updateForm={updateForm}
-          pattern="\d{2}(\:\d{2})?"
         />
         <AdminInput
           name="Hora de fin"
           formKey="endTime"
           value={formData.endTime}
           updateForm={updateForm}
-          pattern="\d{2}(\:\d{2})?"
         />
-        <div
-          id=""
-          className="flex flex-row justify-center md:justify-end md:mr-10 gap-2"
-        >
+        <div className="flex flex-row justify-center md:justify-end md:mr-10 gap-2">
           {formData.id !== "" &&
             (
               <button
