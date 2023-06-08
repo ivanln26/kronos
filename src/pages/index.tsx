@@ -19,15 +19,15 @@ function clampNumber(n: number, a: number, b: number): number {
   return Math.max(Math.min(n, Math.max(a, b)), Math.min(a, b));
 }
 
-const Home: NextPage = () => {
-  const days: Day[] = [
-    { id: "monday", name: "Lunes", abbreviation: "L" },
-    { id: "tuesday", name: "Martes", abbreviation: "M" },
-    { id: "wednesday", name: "Miércoles", abbreviation: "X" },
-    { id: "thursday", name: "Jueves", abbreviation: "J" },
-    { id: "friday", name: "Viernes", abbreviation: "V" },
-  ];
+const days: readonly Day[] = [
+  { id: "monday", name: "Lunes", abbreviation: "L" },
+  { id: "tuesday", name: "Martes", abbreviation: "M" },
+  { id: "wednesday", name: "Miércoles", abbreviation: "X" },
+  { id: "thursday", name: "Jueves", abbreviation: "J" },
+  { id: "friday", name: "Viernes", abbreviation: "V" },
+] as const;
 
+const Home: NextPage = () => {
   const [currentDay, setCurrentDay] = useState<Weekday>("monday");
   const [enabled, setEnabled] = useState(false);
   useEffect(() => {

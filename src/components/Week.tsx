@@ -10,7 +10,7 @@ type Day = {
 };
 
 type WeekProps = {
-  days: Day[];
+  days: readonly Day[];
   activeDay: Weekday;
   setDays: (i: Weekday) => void;
 };
