@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { signIn, useSession } from "next-auth/react";
 
 import Button from "@/components/Button";
@@ -17,13 +17,6 @@ export default function Admin() {
 
   const [current, setCurrent] = useState<ItemId>("schedule");
   const [id, setId] = useState<string>("");
-  const [triggerRefetch, setTriggerRefetch] = useState<boolean>(false);
-
-  useEffect(() => {
-    schedules.refetch();
-    lectures.refetch();
-    setTriggerRefetch(false);
-  }, [triggerRefetch]);
 
   return (
     <>
@@ -93,18 +86,8 @@ export default function Admin() {
               </section>
               <section className="px-2 py-1 grow">
                 <div className="flex flex-col px-2 py-4 rounded-xl bg-primary-99 bg-gradient-to-r from-primary-40/[.05] to-primary-40/[.05] dark:bg-neutral-10 dark:from-primary-80/[.05] dark:to-primary-80/[.05]">
-                  {current === "schedule" && (
-                    <ScheduleAdmin
-                      id={id}
-                      setTriggerRefetch={setTriggerRefetch}
-                    />
-                  )}
-                  {current === "lecture" && (
-                    <LectureAdmin
-                      id={id}
-                      setTriggerRefetch={setTriggerRefetch}
-                    />
-                  )}
+                  {current === "schedule" && <ScheduleAdmin id={id} />}
+                  {current === "lecture" && <LectureAdmin id={id} />}
                 </div>
               </section>
             </main>

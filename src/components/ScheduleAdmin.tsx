@@ -9,10 +9,9 @@ import Modal from "./Modal";
 
 type ScheduleAdminProps = {
   id: string;
-  setTriggerRefetch: Function;
 };
 
-const ScheduleAdmin = ({ id, setTriggerRefetch }: ScheduleAdminProps) => {
+const ScheduleAdmin = ({ id }: ScheduleAdminProps) => {
   type StringSchedule = {
     [k in keyof Schedule]: string;
   };
@@ -22,9 +21,22 @@ const ScheduleAdmin = ({ id, setTriggerRefetch }: ScheduleAdminProps) => {
 
   const schedule = trpc.schedules.get.useQuery({ id: id.toString() }).data;
 
-  const create = trpc.schedules.create.useMutation();
-  const update = trpc.schedules.update.useMutation();
-  const remove = trpc.schedules.delete.useMutation();
+  const ctx = trpc.useContext();
+  const create = trpc.schedules.create.useMutation({
+    onSuccess: () => {
+      ctx.schedules.getAll.invalidate();
+    },
+  });
+  const update = trpc.schedules.update.useMutation({
+    onSuccess: () => {
+      ctx.schedules.getAll.invalidate();
+    },
+  });
+  const remove = trpc.schedules.delete.useMutation({
+    onSuccess: () => {
+      ctx.schedules.getAll.invalidate();
+    },
+  });
 
   useEffect(() => {
     if (id === "") {
@@ -91,7 +103,6 @@ const ScheduleAdmin = ({ id, setTriggerRefetch }: ScheduleAdminProps) => {
         </button>
       </div>,
     );
-    setTriggerRefetch(true);
   };
 
   const handleModal = (e: any) => {
@@ -203,7 +214,6 @@ const ScheduleAdmin = ({ id, setTriggerRefetch }: ScheduleAdminProps) => {
         </button>
       </div>,
     );
-    setTriggerRefetch(true);
   };
 
   const updateForm = <K extends keyof StringSchedule>(
