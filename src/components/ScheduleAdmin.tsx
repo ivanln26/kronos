@@ -25,16 +25,19 @@ const ScheduleAdmin = ({ id }: ScheduleAdminProps) => {
   const create = trpc.schedules.create.useMutation({
     onSuccess: () => {
       ctx.schedules.getAll.invalidate();
+      ctx.lecture.getAll.invalidate();
     },
   });
   const update = trpc.schedules.update.useMutation({
     onSuccess: () => {
       ctx.schedules.getAll.invalidate();
+      ctx.lecture.getAll.invalidate();
     },
   });
   const remove = trpc.schedules.delete.useMutation({
     onSuccess: () => {
       ctx.schedules.getAll.invalidate();
+      ctx.lecture.getAll.invalidate();
     },
   });
 

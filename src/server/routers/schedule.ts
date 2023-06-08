@@ -50,7 +50,6 @@ export const scheduleRouter = router({
       };
     });
   }),
-
   get: procedure.input(
     z.object({
       id: z.string().regex(/[0-9]*/).transform((val) => BigInt(val)),
@@ -74,7 +73,6 @@ export const scheduleRouter = router({
       modality: schedule.modality,
     };
   }),
-
   create: procedure.input(scheduleInput).mutation(async ({ input }) => {
     const result = await prisma.schedule.create({
       data: {
@@ -106,7 +104,6 @@ export const scheduleRouter = router({
     });
     return result;
   }),
-
   delete: procedure.input(
     z.object({
       id: z.string().regex(/[0-9]*/).transform((val) => BigInt(val)),

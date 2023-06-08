@@ -59,7 +59,7 @@ model Lecture {
   date       DateTime     @db.Date
 
   attendances Attendance[]
-  schedules   Schedule     @relation(fields: [scheduleId], references: [id])
+  schedules   Schedule     @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
 
   @@map("lecture")
 }

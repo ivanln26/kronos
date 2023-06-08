@@ -23,16 +23,19 @@ const LectureAdmin = ({ id }: LectureAdminProps) => {
   const ctx = trpc.useContext();
   const create = trpc.lecture.create.useMutation({
     onSuccess: () => {
+      ctx.schedules.getAll.invalidate();
       ctx.lecture.getAll.invalidate();
     },
   });
   const update = trpc.lecture.update.useMutation({
     onSuccess: () => {
+      ctx.schedules.getAll.invalidate();
       ctx.lecture.getAll.invalidate();
     },
   });
   const remove = trpc.lecture.delete.useMutation({
     onSuccess: () => {
+      ctx.schedules.getAll.invalidate();
       ctx.lecture.getAll.invalidate();
     },
   });
