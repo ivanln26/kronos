@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { prisma } from "../db";
 import { procedure, router } from "../trpc";
-import { lectureState, weekdays } from "../types";
+import { lectureState, user, weekdays } from "../types";
 import type { LectureState } from "../types";
 
 const formatting = new Intl.DateTimeFormat("es-AR", {
@@ -153,11 +153,18 @@ export const lectureRouter = router({
       where: {
         schedules: {
           weekday: day,
-          course: {
-            enrollments: {
-              some: { studentId: input.userId },
+          OR: [
+            {
+              course: {
+                enrollments: {
+                  some: { studentId: input.userId },
+                },
+              },
             },
-          },
+            {
+              professorId: input.userId,
+            },
+          ],
         },
       },
       orderBy: {
