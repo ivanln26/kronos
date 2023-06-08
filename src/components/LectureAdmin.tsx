@@ -190,7 +190,6 @@ const LectureAdmin = ({ id, setTriggerRefetch }: LectureAdminProps) => {
     setTriggerRefetch(true);
   };
 
-
   const updateForm = <K extends keyof StringLecture>(
     key: K,
     value: StringLecture[K],

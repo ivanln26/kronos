@@ -49,7 +49,7 @@ export const authOptions: NextAuthOptions = {
         user: {
           ...session.user,
           role: user?.role,
-          id: user?.id.toString()
+          id: user?.id.toString(),
         },
       };
     },
