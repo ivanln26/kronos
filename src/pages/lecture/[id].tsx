@@ -38,7 +38,7 @@ const LectureDetail = () => {
   });
   const unsuscribeMutation = trpc.users.unsuscribe.useMutation({
     onSuccess: () => {
-      dispatchAlert("Te has desuscribido a la materia.")
+      dispatchAlert("Suscripción a la materia cancelada.")
     }
   });
 
