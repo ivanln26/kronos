@@ -1,12 +1,12 @@
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 
 import Navbar from "@/components/Navbar";
 import Spinner from "@/components/Spinner";
 import Dropdown, { DropdownItem } from "@/components/Dropdown";
 import { trpc } from "@/utils/trpc";
-import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
 
 const LectureDetail = () => {
   const { query } = useRouter();
@@ -28,6 +28,9 @@ const LectureDetail = () => {
     },
   });
 
+  const suscribeMutation = trpc.users.suscribe.useMutation();
+  const unsuscribeMutation = trpc.users.unsuscribe.useMutation();
+
   useEffect(() => {
     if (showAlert) {
       setTimeout(() => {
@@ -36,7 +39,7 @@ const LectureDetail = () => {
     }
   }, [showAlert]);
 
-  const items: DropdownItem[] = [
+  const professorItems: DropdownItem[] = [
     {
       name: "Iniciar",
       fn: () => {
@@ -53,6 +56,31 @@ const LectureDetail = () => {
       name: "Notificar retraso",
       fn: () => {
         mutation.mutate({ id, state: "delayed" });
+      },
+    },
+  ];
+
+  const studentItems: DropdownItem[] = [
+    {
+      name: "Seguir",
+      fn: () => {
+        if (session !== null && data) {
+          suscribeMutation.mutate({
+            studentId: Number(session.user.id),
+            courseId: Number(data.courseId),
+          });
+        }
+      },
+    },
+    {
+      name: "Dejar de Seguir",
+      fn: () => {
+        if (session !== null && data) {
+          unsuscribeMutation.mutate({
+            studentId: Number(session.user.id),
+            courseId: Number(data.courseId),
+          });
+        }
       },
     },
   ];
@@ -132,10 +160,15 @@ const LectureDetail = () => {
                       </svg>
                     </Link>
                   </div>
-                  {session?.user.role === "professor" &&
-                    session?.user.id === data.teacherId.toString() && (
+                  {session !== null && (
                     <div>
-                      <Dropdown items={items} />
+                      {session.user.role === "professor" &&
+                        session?.user.id === data.teacherId.toString() && (
+                        <Dropdown items={professorItems} />
+                      )}
+                      {session.user.role === "student" && (
+                        <Dropdown items={studentItems} />
+                      )}
                     </div>
                   )}
                 </div>

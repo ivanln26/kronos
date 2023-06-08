@@ -69,6 +69,7 @@ export const lectureRouter = router({
         `${lecture.schedules.user.lastName.toUpperCase()}, ${lecture.schedules.user.name}`,
       teacherId: lecture.schedules.user.id,
       course: lecture.schedules.course.name,
+      courseId: lecture.schedules.course.id,
       date: lecture.date,
       startDate: formatDate(lecture.schedules.startTime),
       endDate: formatDate(lecture.schedules.endTime),
